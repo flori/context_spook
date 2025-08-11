@@ -1,0 +1,155 @@
+# ContextSpook
+
+ContextSpook is a Ruby library that collects and organizes project information
+to help AI assistants understand codebases better. It provides a
+domain-specific language (DSL) for describing project context, which can then
+be exported as structured JSON data.
+
+The DSL is general-purpose and can be used for any kind of project or
+collection of files, whether software development, documentation, research
+data, educational materials, creative projects, or any other type of organized
+information. The `contexts/project.rb` example below demonstrates how to
+describe a Ruby project, but the same principles apply across many different
+domains.
+
+## Installation
+
+Add this line to your application's Gemfile:
+
+```ruby
+gem 'context_spook'
+```
+
+And then execute:
+```bash
+$ bundle install
+```
+
+Or install it yourself as:
+```bash
+$ gem install context_spook
+```
+
+## Usage
+
+Create a `contexts/project.rb` file that describes your project context using
+the DSL in a context definition file:
+
+```ruby
+# contexts/project.rb
+context do
+  variable branch: `git rev-parse --abbrev-ref HEAD`.chomp
+
+  namespace "structure" do
+    command "tree lib", tags: %w[ project_structure ]
+  end
+
+  namespace "lib" do
+    Dir['lib/**/*.rb'].each do |filename|
+      file filename, tags: 'lib'
+    end
+  end
+
+  namespace "spec" do
+    Dir['spec/**/*.rb'].each do |filename|
+      file filename, tags: 'spec'
+    end
+  end
+
+  namespace "gems" do
+    file 'context_spook.gemspec'
+    file 'Gemfile'
+    file 'Gemfile.lock'
+  end
+
+  file 'Rakefile',  tags: 'gem_hadar'
+
+  file 'README.md', tags: 'documentation'
+
+  meta ruby: RUBY_DESCRIPTION
+
+  meta code_coverage: JSON.load_file('coverage/coverage_context.json') rescue nil
+end
+```
+
+### Programmatic Usage
+
+Now you can generate the context from the file, and store it as JSON in Ruby.
+
+```ruby
+context = ContextSpook::generate_context('contexts/project.rb')
+File.write 'context.json', context.to_json
+```
+
+### CLI Usage
+
+Generate context and save to file:
+
+```bash
+./bin/context_spook contexts/project.rb > context.json
+```
+
+Or pipe directly to another tool:
+
+```
+./bin/context_spook contexts/project.rb | ollama_chat_send
+```
+
+You will see two orange warning messages, that demonstrates how errors like
+missing files or commands with failing exit codes are handled.
+
+## What Gets Collected
+
+The DSL collects various types of project information:
+
+- **Variables**: Key-value pairs (e.g., git branch)
+- **Files**: Content, size, line count, and tags for each file
+- **Commands**: Shell command outputs with exit codes and working directory
+- **Metadata**: Project-wide attributes (e.g., Ruby version, coverage data)
+
+## Intended Use Case
+
+The generated JSON is designed to be sent to Language Model assistants to
+provide them with comprehensive context about your codebase. This helps AI
+assistants understand:
+
+- The project structure and file organization
+- Key source files and their contents
+- Command outputs that reveal project state
+- Metadata about the development environment
+- Coverage information for code quality
+
+## Example Output Structure
+
+```json
+{
+  "files": {
+    "lib/context_spook.rb": {
+      "namespace": "lib",
+      "content": "...",
+      "size": 1234,
+      "lines": 56,
+      "tags": ["lib"]
+    }
+  },
+  "commands": {
+    "tree lib": {
+      "namespace": "structure",
+      "output": "lib\n├── context_spook\n│   └── generator.rb\n└── context_spook.rb\n\n2 directories, 3 files",
+      "exit_code": 0,
+      "working_directory": "/path/to/project"
+    }
+  },
+  "metadata": {
+    "ruby": "ruby 3.1.0 ...",
+    "code_coverage": { ... }
+  },
+  "variables": {
+    "branch": "main"
+  }
+}
+```
+
+## License
+
+The gem is available as open source under the terms of the [MIT License](./LICENSE)

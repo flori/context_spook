@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+
+require 'context_spook'
+
+filename = ARGV.shift or fail 'require context definition file as first argument'
+context_json = ContextSpook.generate_context(filename).to_json
+STDERR.puts "Now outputting #{context_json.size} bytes of JSON context."
+puts context_json
