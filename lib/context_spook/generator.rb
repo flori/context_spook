@@ -143,9 +143,13 @@ module ContextSpook
           lines: content.lines.size,
           tags: (Array(tags) if tags),
         }.compact
+        file_size = Tins::Unit.format(
+          content.size, format: '%.2f %U', unit: ?b, prefix: 1024
+        )
+        STDERR.puts "Read #{filename.inspect} (%s) for context." % file_size
         nil
       rescue Errno::ENOENT => e
-        warn "Reading #{filename.inspect} caused #{e.class}: #{e}"
+        STDERR.puts color(208) { "Reading #{filename.inspect} caused #{e.class}: #{e}" }
       end
 
       # The commands method sets up a DSL accessor for provided command outputs.
@@ -168,7 +172,7 @@ module ContextSpook
         output = `#{shell_command}`
         exit_code = $?&.exitstatus.to_i
         if exit_code != 0
-          warn "Executing #{shell_command.inspect} resulted in exit code #{exit_code}."
+          STDERR.puts color(208) { "Executing #{shell_command.inspect} resulted in exit code #{exit_code}." }
         end
         commands[shell_command] = {
           namespace: scope_top,
@@ -177,6 +181,10 @@ module ContextSpook
           working_directory: Dir.pwd,
           tags: (Array(tags) if tags),
         }.compact
+        output_size = Tins::Unit.format(
+          output.size, format: '%.2f %U', unit: ?b, prefix: 1024
+        )
+        STDERR.puts "Executed #{shell_command.inspect} with output (%s) for context." % output_size
         nil
       end
 
@@ -198,17 +206,6 @@ module ContextSpook
           metadata:,
           variables:
         }
-      end
-
-      private
-
-      # The warn method enhances warning messages by applying colored
-      # formatting before passing them to the superclass implementation.
-      #
-      # @param msgs [ Array ] an array of message objects to be formatted and warned
-      def warn(*msgs)
-        msgs.map! { |m| color(208) { m } }
-        super(*msgs, uplevel: 1)
       end
     end
 

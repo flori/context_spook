@@ -25,6 +25,8 @@ context do
 
   command 'false', tags: 'failure'
 
+  command 'echo hello world'
+
   file 'nixda', tags: 'failure'
 
   file 'Rakefile',  tags: [ 'gem_hadar' ]
