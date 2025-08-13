@@ -32,8 +32,46 @@ $ gem install context_spook
 
 ## Usage
 
-Create a `contexts/project.rb` file that describes your project context using
-the DSL in a context definition file:
+### Programmatic Usage
+
+#### Directly in Ruby
+
+Now you can generate context from a block directly in Ruby using the DSL:
+
+```ruby
+context = ContextSpook::generate_context do
+  context do
+    variable branch: `git rev-parse --abbrev-ref HEAD`.chomp
+    
+    namespace "structure" do
+      command "tree", tags: %w[ project_structure ]
+    end
+    
+    namespace "lib" do
+      Dir['lib/**/*.rb'].each do |filename|
+        file filename, tags: 'lib'
+      end
+    end
+    
+    # ... rest of your context definition, see below for full example
+  end
+end
+```
+
+This approach can be used to dynamically generate a context when it is not
+configurable via a user context definition file, or as a fallback when users
+have not yet created such files.
+
+Afterwards you can store the context as JSON in Ruby or send it to another
+application.
+
+```ruby
+File.write 'context.json', context.to_json
+```
+
+#### From a context definition file
+
+Alternatively store the block's content above to a file `contexts/project.rb`:
 
 ```ruby
 # contexts/project.rb
@@ -72,9 +110,8 @@ context do
 end
 ```
 
-### Programmatic Usage
-
-Now you can generate the context from the file, and store it as JSON in Ruby.
+Now you can generate the context from the file, and store it as JSON in Ruby or
+send it to another application.
 
 ```ruby
 context = ContextSpook::generate_context('contexts/project.rb')
@@ -129,7 +166,9 @@ assistants understand:
       "content": "...",
       "size": 1234,
       "lines": 56,
-      "tags": ["lib"]
+      "tags": [
+        "lib"
+      ]
     }
   },
   "commands": {
@@ -142,7 +181,7 @@ assistants understand:
   },
   "metadata": {
     "ruby": "ruby 3.1.0 ...",
-    "code_coverage": { ... }
+    "code_coverage": {}
   },
   "variables": {
     "branch": "main"

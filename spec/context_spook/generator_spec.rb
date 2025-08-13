@@ -5,19 +5,46 @@ describe ContextSpook::Generator do
     ContextSpook.generate_context('contexts/project.rb')
   end
 
-  it 'context can be generated' do
+  it 'context can be generated from block' do
+    expect_any_instance_of(described_class).to\
+      receive(:output_context_size).and_call_original
+    context = ContextSpook.generate_context do
+      context do
+        variable foo: 'bar'
+        metadata version: '1.0'
+      end
+    end
+    expect(context).to be_a described_class::Context
+    expect(context.variables[:foo]).to eq 'bar'
+    expect(context.metadata[:version]).to eq '1.0'
+  end
+
+  it 'context can be generated from filename' do
+    expect_any_instance_of(described_class).to\
+      receive(:output_context_size).and_call_original
     expect(context).to be_a described_class::Context
     expect(context.metadata[:ruby]).to eq RUBY_DESCRIPTION
   end
 
+  it 'could handle premature output_context_size calls' do
+    expect_any_instance_of(described_class).to\
+      receive(:output_context_size).and_call_original
+    described_class.send(:new).output_context_size
+  end
+
+  it 'cannot do from block and filename' do
+    expect {
+      ContextSpook.generate_context('contexts/project.rb') { }
+    }.to raise_error(ArgumentError, /need either a filename or a &block/)
+  end
+
   it 'context be transformed to JSON if loaded' do
     context_as_json = context.to_json
-    expect(context_as_json.size).to be > 1024
+    expect(context.size).to be > 1024
     expect(JSON(context_as_json)).to be_a Hash
   end
 
   describe 'Context' do
-
     it 'can have variables' do
       expect(context.variables[:branch]).to be_present
     end

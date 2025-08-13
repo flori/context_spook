@@ -4,8 +4,4 @@ require 'context_spook'
 
 filename = ARGV.shift or fail 'require context definition file as first argument'
 context_json = ContextSpook.generate_context(filename).to_json
-context_json_size = Tins::Unit.format(
-  context_json.size, format: '%.2f %U', unit: ?b, prefix: 1024
-)
-STDERR.puts "Now outputting #{context_json_size} of JSON context in total."
 puts context_json

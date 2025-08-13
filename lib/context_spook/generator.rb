@@ -1,7 +1,7 @@
 require 'tins/xt'
 require 'term/ansicolor'
 require 'json'
-
+require 'mize'
 
 # The ContextSpook module serves as a namespace container for collecting and
 # organizing project information for AI assistance.
@@ -19,8 +19,16 @@ module ContextSpook
   #
   # @return [ ContextSpook::Generator::Context ] the context object generated
   # from the file contents
-  def self.generate_context(filename)
-    Generator.send(:new).send(:parse, File.read(filename)).context
+  def self.generate_context(filename = nil, &block)
+    filename.present? ^ block or
+      raise ArgumentError, 'need either a filename or a &block argument'
+    generator = if filename
+                Generator.send(:new).send(:parse, File.read(filename))
+                else
+                  Generator.send(:new, &block)
+                end
+    generator.output_context_size
+    generator.context
   end
 
   # The Generator class provides a DSL parser that interprets context
@@ -50,6 +58,20 @@ module ContextSpook
       else
         @context
       end
+    end
+
+    # The output_context_size method prints the total size of the generated
+    # context JSON representation.
+    #
+    # This method calculates the size of the context object when serialized to
+    # JSON, formats it using binary units (KiB, MiB, etc.), and outputs the
+    # result to standard error.
+    def output_context_size
+      context_size = @context&.size.to_i
+      json_content_size = Tins::Unit.format(
+        context_size, format: '%.2f %U', unit: ?b, prefix: 1024
+      )
+      STDERR.puts "Built #{json_content_size} of JSON context in total."
     end
 
     # The Context class represents and manages project context data, providing
@@ -214,6 +236,7 @@ module ContextSpook
       # The to_json method converts the object to a JSON representation by
       # first generating its hash form and then serializing that hash into JSON
       # format.
+      memoize method:
       def to_json(*)
         as_json.to_json(*)
       end
@@ -229,6 +252,19 @@ module ContextSpook
           metadata:,
           variables:
         }
+      end
+
+      # The size method calculates and returns the byte size of the JSON
+      # representation of the context.
+      #
+      # This method determines the size in bytes of the JSON-serialized version
+      # of the context object, which is useful for understanding the total data
+      # payload being sent to an AI assistant.
+      #
+      # @return [ Integer ] the size in bytes of the JSON representation of the
+      # context
+      def size
+        to_json.size
       end
     end
 

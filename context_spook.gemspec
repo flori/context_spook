@@ -32,4 +32,5 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency(%q<tins>.freeze, ["~> 1.39".freeze])
   s.add_runtime_dependency(%q<json>.freeze, ["~> 2.0".freeze])
   s.add_runtime_dependency(%q<term-ansicolor>.freeze, ["~> 1.11".freeze])
+  s.add_runtime_dependency(%q<mize>.freeze, ["~> 0.6".freeze])
 end
