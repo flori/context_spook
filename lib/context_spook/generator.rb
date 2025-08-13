@@ -117,6 +117,29 @@ module ContextSpook
         nil
       end
 
+      # The json method reads and parses a JSON file, returning the parsed data
+      # structure.
+      #
+      # This method attempts to load a JSON file from the specified path and
+      # returns the resulting Ruby data structure. It provides verbose output
+      # about the file size when successfully reading the file. In case of file
+      # not found errors, it outputs a colored warning message to standard
+      # error and returns nil.
+      #
+      # @param filename [ String ] the path to the JSON file to be read and parsed
+      #
+      # @return [ Object, nil ] the parsed JSON data structure or nil if the file cannot be read
+      def json(filename)
+        file_size = Tins::Unit.format(
+          File.size(filename), format: '%.2f %U', unit: ?b, prefix: 1024
+        )
+        STDERR.puts "Read #{filename.inspect} as JSON (%s) for context." % file_size
+        JSON.load_file(filename)
+      rescue Errno::ENOENT => e
+        STDERR.puts color(208) { "Reading #{filename.inspect} as JSON caused #{e.class}: #{e}" }
+        nil
+      end
+
       # The files method sets up a DSL accessor for providing files.
       #
       # @param default [ Hash ] the default files hash

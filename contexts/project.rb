@@ -35,5 +35,9 @@ context do
 
   meta ruby: RUBY_DESCRIPTION
 
-  meta code_coverage: JSON.load_file('coverage/coverage_context.json') rescue nil
+  meta hello_world: json('hello_world.json')
+
+  meta nixda_json: json('nixda_json.json')
+
+  meta code_coverage: json('coverage/coverage_context.json')
 end
