@@ -41,7 +41,7 @@ context do
   variable branch: `git rev-parse --abbrev-ref HEAD`.chomp
 
   namespace "structure" do
-    command "tree lib", tags: %w[ project_structure ]
+    command "tree", tags: %w[ project_structure ]
   end
 
   namespace "lib" do
@@ -133,7 +133,7 @@ assistants understand:
     }
   },
   "commands": {
-    "tree lib": {
+    "tree": {
       "namespace": "structure",
       "output": "lib\n├── context_spook\n│   └── generator.rb\n└── context_spook.rb\n\n2 directories, 3 files",
       "exit_code": 0,

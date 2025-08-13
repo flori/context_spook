@@ -2,7 +2,7 @@ context do
   variable branch: `git rev-parse --abbrev-ref HEAD`.chomp
 
   namespace "structure" do
-    command "tree lib", tags: %w[ project_structure ]
+    command "tree", tags: %w[ project_structure ]
   end
 
   namespace "lib" do

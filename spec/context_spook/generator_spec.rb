@@ -33,7 +33,7 @@ describe ContextSpook::Generator do
     end
 
     it 'can have commands' do
-      command = context.commands['tree lib']
+      command = context.commands['tree']
       expect(command).to be_present
       expect(command[:working_directory]).to eq Dir.pwd
       expect(command[:exit_code]).to be_present
