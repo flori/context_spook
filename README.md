@@ -8,7 +8,7 @@ be exported as structured JSON data.
 The DSL is general-purpose and can be used for any kind of project or
 collection of files, whether software development, documentation, research
 data, educational materials, creative projects, or any other type of organized
-information. The `contexts/project.rb` example below demonstrates how to
+information. The `.contexts/project.rb` example below demonstrates how to
 describe a Ruby project, but the same principles apply across many different
 domains.
 
@@ -71,10 +71,10 @@ File.write 'context.json', context.to_json
 
 #### From a context definition file
 
-Alternatively store the block's content above to a file `contexts/project.rb`:
+Alternatively store the block's content above to a file `.contexts/project.rb`:
 
 ```ruby
-# contexts/project.rb
+# .contexts/project.rb
 context do
   variable branch: `git rev-parse --abbrev-ref HEAD`.chomp
 
@@ -114,7 +114,7 @@ Now you can generate the context from the file, and store it as JSON in Ruby or
 send it to another application.
 
 ```ruby
-context = ContextSpook::generate_context('contexts/project.rb')
+context = ContextSpook::generate_context('.contexts/project.rb')
 File.write 'context.json', context.to_json
 ```
 
@@ -123,13 +123,13 @@ File.write 'context.json', context.to_json
 Generate context and save to file:
 
 ```bash
-./bin/context_spook contexts/project.rb > context.json
+./bin/context_spook .contexts/project.rb > context.json
 ```
 
 Or pipe directly to another tool:
 
 ```
-./bin/context_spook contexts/project.rb | ollama_chat_send
+./bin/context_spook .contexts/project.rb | ollama_chat_send
 ```
 
 You will see two orange warning messages, that demonstrates how errors like
