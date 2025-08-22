@@ -53,6 +53,7 @@ describe ContextSpook::Generator do
       file = context.files['lib/context_spook.rb']
       expect(file).to be_present
       expect(file[:content]).to be_present
+      expect(file[:content_types]).to be_present
       expect(file[:size]).to be > 0
       expect(file[:lines]).to be > 0
       expect(file[:namespace]).to eq :lib
