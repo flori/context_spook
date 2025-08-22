@@ -2,6 +2,7 @@ require 'tins/xt'
 require 'term/ansicolor'
 require 'json'
 require 'mize'
+require 'mime-types'
 
 # The ContextSpook module serves as a namespace container for collecting and
 # organizing project information for AI assistance.
@@ -186,6 +187,7 @@ module ContextSpook
           content:,
           size: content.size,
           lines: content.lines.size,
+          content_types: MIME::Types.type_for(filename).map(&:content_type).full?,
           tags: (Array(tags) if tags),
         }.compact
         file_size = Tins::Unit.format(

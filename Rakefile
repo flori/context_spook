@@ -29,9 +29,10 @@ GemHadar do
   dependency 'tins',           '~>1.39'
   dependency 'json',           '~>2.0'
   dependency 'term-ansicolor', '~> 1.11'
-  dependency  'mize',          '~> 0.6'
-  development_dependency 'all_images',            '~> 0.6'
-  development_dependency 'rspec',                 '~> 3.2'
+  dependency 'mize',           '~> 0.6'
+  dependency 'mime-types',     '~> 3.0'
+  development_dependency 'all_images', '~> 0.6'
+  development_dependency 'rspec',      '~> 3.2'
   development_dependency 'debug'
   development_dependency 'simplecov'
 
