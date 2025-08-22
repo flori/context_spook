@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe ContextSpook::Generator do
   let :context do
-    ContextSpook.generate_context('contexts/project.rb')
+    ContextSpook.generate_context('.contexts/project.rb')
   end
 
   it 'context can be generated from block' do
@@ -34,7 +34,7 @@ describe ContextSpook::Generator do
 
   it 'cannot do from block and filename' do
     expect {
-      ContextSpook.generate_context('contexts/project.rb') { }
+      ContextSpook.generate_context('.contexts/project.rb') { }
     }.to raise_error(ArgumentError, /need either a filename or a &block/)
   end
 
