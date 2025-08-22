@@ -19,7 +19,7 @@ GemHadar do
   test_dir    'spec'
   ignore      '.*.sw[pon]', 'pkg', 'Gemfile.lock', '.AppleDouble', '.bundle',
     '.yardoc', 'doc', 'tags', 'errors.lst', 'cscope.out', 'coverage', 'tmp',
-    'yard'
+    'yard', 'TODO.md'
   package_ignore '.all_images.yml', '.tool-versions', '.gitignore', 'VERSION',
      '.rspec', '.github'
   readme      'README.md'
