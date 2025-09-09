@@ -1,9 +1,9 @@
 # -*- encoding: utf-8 -*-
-# stub: context_spook 0.3.0 ruby lib
+# stub: context_spook 0.4.0 ruby lib
 
 Gem::Specification.new do |s|
   s.name = "context_spook".freeze
-  s.version = "0.3.0".freeze
+  s.version = "0.4.0".freeze
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0".freeze) if s.respond_to? :required_rubygems_version=
   s.require_paths = ["lib".freeze]

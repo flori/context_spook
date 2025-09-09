@@ -238,16 +238,19 @@ module ContextSpook
       # The to_json method converts the object to a JSON representation by
       # first generating its hash form and then serializing that hash into JSON
       # format.
+      #
+      # @param args [ Array ] pass-through arguments
       memoize method:
-      def to_json(*)
-        as_json.to_json(*)
+      def to_json(*args)
+        as_json.to_json(*args)
       end
 
       # The as_json method converts the context's files, commands, and metadata
       # into a hash representation.
       #
+      # @param ignored [ Array ] ignored arguments
       # @return [ Hash ] a hash containing the files, commands, and metadata
-      def as_json(*)
+      def as_json(*ignored)
         {
           files:,
           commands:,
