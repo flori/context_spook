@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
   s.email = "flori@ping.de".freeze
   s.executables = ["context_spook".freeze]
   s.extra_rdoc_files = ["README.md".freeze, "lib/context_spook.rb".freeze, "lib/context_spook/generator.rb".freeze, "lib/context_spook/version.rb".freeze]
-  s.files = ["Gemfile".freeze, "LICENSE".freeze, "README.md".freeze, "Rakefile".freeze, "bin/context_spook".freeze, "context_spook.gemspec".freeze, "contexts/project.rb".freeze, "hello_world.json".freeze, "lib/context_spook.rb".freeze, "lib/context_spook/generator.rb".freeze, "lib/context_spook/version.rb".freeze, "spec/context_spook/generator_spec.rb".freeze, "spec/spec_helper.rb".freeze]
+  s.files = [".contexts/project.rb".freeze, "Gemfile".freeze, "LICENSE".freeze, "README.md".freeze, "Rakefile".freeze, "bin/context_spook".freeze, "context_spook.gemspec".freeze, "hello_world.json".freeze, "lib/context_spook.rb".freeze, "lib/context_spook/generator.rb".freeze, "lib/context_spook/version.rb".freeze, "spec/context_spook/generator_spec.rb".freeze, "spec/spec_helper.rb".freeze]
   s.homepage = "https://github.com/flori/context_spook".freeze
   s.licenses = ["MIT".freeze]
   s.rdoc_options = ["--title".freeze, "ContextSpook - context_spook collects project context for AI".freeze, "--main".freeze, "README.md".freeze]
@@ -24,7 +24,7 @@ Gem::Specification.new do |s|
 
   s.specification_version = 4
 
-  s.add_development_dependency(%q<gem_hadar>.freeze, ["~> 2.1".freeze])
+  s.add_development_dependency(%q<gem_hadar>.freeze, ["~> 2.2".freeze])
   s.add_development_dependency(%q<all_images>.freeze, ["~> 0.6".freeze])
   s.add_development_dependency(%q<rspec>.freeze, ["~> 3.2".freeze])
   s.add_development_dependency(%q<debug>.freeze, [">= 0".freeze])
