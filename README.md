@@ -12,6 +12,10 @@ information. The `.contexts/project.rb` example below demonstrates how to
 describe a Ruby project, but the same principles apply across many different
 domains.
 
+## Documentation
+
+Complete API documentation is available at: [GitHub.io](https://flori.github.io/context_spook/)
+
 ## Installation
 
 Add this line to your application's Gemfile:
