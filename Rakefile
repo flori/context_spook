@@ -9,7 +9,6 @@ GemHadar do
   email       'flori@ping.de'
   homepage    "https://github.com/flori/context_spook"
   summary     "#{name} collects project context for AI"
-  executables 'context_spook'
 
   description <<~EOT
     #{name} is a library that collects and organizes project
@@ -23,6 +22,12 @@ GemHadar do
   package_ignore '.all_images.yml', '.tool-versions', '.gitignore', 'VERSION',
      '.rspec', '.github'
   readme      'README.md'
+
+  executables 'context_spook'
+
+  github_workflows(
+    'static.yml' => {}
+  )
 
   required_ruby_version  '~> 3.1'
 
