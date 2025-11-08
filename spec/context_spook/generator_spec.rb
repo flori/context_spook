@@ -64,7 +64,7 @@ describe ContextSpook::Generator do
       command = context.commands['tree']
       expect(command).to be_present
       expect(command[:working_directory]).to eq Dir.pwd
-      expect(command[:exit_code]).to be_present
+      expect(command[:exit_code]).not_to be_nil
       if command[:exit_code] == 0
         expect(command[:output]).to be_present
       else
