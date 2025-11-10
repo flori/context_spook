@@ -210,6 +210,19 @@ module ContextSpook
         nil
       end
 
+      # The yaml method reads and parses a YAML file, returning the resulting
+      # data structure.
+      #
+      # This method attempts to load a YAML file from the specified path and
+      # returns the resulting Ruby data structure. It provides verbose output
+      # about the file size when successfully reading the file. In case of file
+      # not found errors or YAML syntax errors, it outputs a colored warning
+      # message to standard error and returns nil.
+      #
+      # @param filename [ String ] the path to the YAML file to be read and parsed
+      #
+      # @return [ Object, nil ] the parsed YAML data structure or nil if the
+      #   file cannot be read
       def yaml(filename)
         file_size = Tins::Unit.format(
           File.size(filename), format: '%.2f %U', unit: ?b, prefix: 1024
