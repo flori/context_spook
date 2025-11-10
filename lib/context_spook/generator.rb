@@ -29,7 +29,7 @@ module ContextSpook
     #
     # @return [ nil ] always returns nil after attempting to output
     def verbose_puts(*a)
-      @verbose and return
+      @verbose or return
       STDERR.puts(a)
     end
   end
@@ -57,10 +57,11 @@ module ContextSpook
   # @raise [ ArgumentError ] if neither a filename nor a block is provided
   # @raise [ ArgumentError ] if both a filename and a block are provided
   def self.generate_context(filename = nil, verbose: false, &block)
+    verbose = !!verbose
     filename.present? ^ block or
       raise ArgumentError, 'need either a filename or a &block argument'
     generator = if filename
-                Generator.send(:new, verbose:).send(:parse, File.read(filename))
+                  Generator.send(:new, verbose:).send(:parse, File.read(filename))
                 else
                   Generator.send(:new, verbose:, &block)
                 end
