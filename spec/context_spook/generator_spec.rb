@@ -84,5 +84,29 @@ describe ContextSpook::Generator do
     it 'can have yaml metadata' do
       expect(context.metadata[:hey_world]).to eq("hey" => "world")
     end
+
+    it 'handles missing json files gracefully' do
+      expect(context.json('nixda.json')).to be_nil
+    end
+
+    it 'handles invalid json content gracefully' do
+      Tempfile.create('invalid.json') do |f|
+        f.write('{ invalid json }')
+        f.close
+        expect(context.json(f.path)).to be_nil
+      end
+    end
+
+    it 'handles missing yaml files gracefully' do
+      expect(context.yaml('nixda.yaml')).to be_nil
+    end
+
+    it 'handles invalid yaml content gracefully' do
+      Tempfile.create('invalid.yaml') do |f|
+        f.write('invalid: [yaml')
+        f.close
+        expect(context.yaml(f.path)).to be_nil
+      end
+    end
   end
 end
