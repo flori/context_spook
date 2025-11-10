@@ -1,7 +1,57 @@
 #!/usr/bin/env ruby
 
 require 'context_spook'
+require 'tins/go'
+include Tins::GO
+require 'json'
 
-filename = ARGV.shift or fail 'require context definition file as first argument'
-context_json = ContextSpook.generate_context(filename).to_json
-puts context_json
+# The usage method displays the command-line interface help text and example
+# usage patterns for the ContextSpook tool.
+#
+# This method outputs a formatted help message that includes the tool's usage
+# syntax, available options, and practical examples.
+#
+# @see ContextSpook::generate_context
+# @see ContextSpook::Generator
+# @see ContextSpook::Generator::Context
+def usage
+  puts <<~EOT
+
+  Usage: #{File.basename($0)} [options] <context_definition_file>
+
+  Options:
+    -o FILE    Write output to FILE instead of stdout
+    -v         Verbose output
+    -h         Show this help message
+
+  Examples:
+    # Generate context and output to stdout
+    #{File.basename($0)} .contexts/project.rb
+
+    # Generate context and save to file
+    #{File.basename($0)} .contexts/project.rb -o context.json
+
+    # Generate context with verbose output
+    #{File.basename($0)} .contexts/project.rb -v
+
+    # Generate context and pipe to another tool
+    #{File.basename($0)} .contexts/project.rb | ollama_chat_send
+
+  EOT
+  exit 0
+end
+
+opts     = go 'o:pvh'
+opts[?h] and usage
+filename = ARGV.shift or fail 'require context definition file as an argument'
+output   = nil
+context  = ContextSpook.generate_context(filename, verbose: opts[?v])
+if output_filename = opts[?o]
+  if File.exist?(output_filename)
+    fail "Filename #{output_filename.inspect} already exists!"
+  end
+  output = File.new output_filename, ?w
+else
+  output = STDOUT
+end
+JSON.dump(context.as_json, output)
