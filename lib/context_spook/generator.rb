@@ -9,24 +9,35 @@ require 'mime-types'
 module ContextSpook
   include DSLKit::Interpreter
 
-  # The generate_context method processes a context definition file and returns
-  # the resulting context object.
+  # The generate_context method processes a context definition file or block
+  # and returns the resulting context object.
   #
-  # This method reads the content of a specified file, parses it using the
-  # generator's parsing mechanism, and extracts the configured context from the
-  # parsed result.
+  # This method serves as the primary entry point for generating project
+  # context data. It accepts either a filename pointing to a context definition
+  # file or a block containing the context definition, but not both.
+  # When a filename is provided, it reads and parses the file content. When a
+  # block is provided, it evaluates the block within the generator's context.
+  # The method ensures that only one context definition mechanism is used.
   #
-  # @param filename [ String ] the path to the context definition file to be processed
+  # @param filename [ String, nil ] the path to the context definition file to
+  #   be processed
+  # @param verbose [ TrueClass, FalseClass ] flag to enable verbose output
+  #   during processing, defaults to false.
+  # @param block [ Proc ] a block containing the context definition to be
+  #   evaluated
   #
   # @return [ ContextSpook::Generator::Context ] the context object generated
-  # from the file contents
-  def self.generate_context(filename = nil, &block)
+  #   from the file contents or block
+  #
+  # @raise [ ArgumentError ] if neither a filename nor a block is provided
+  # @raise [ ArgumentError ] if both a filename and a block are provided
+  def self.generate_context(filename = nil, verbose: false, &block)
     filename.present? ^ block or
       raise ArgumentError, 'need either a filename or a &block argument'
     generator = if filename
-                Generator.send(:new).send(:parse, File.read(filename))
+                Generator.send(:new, verbose:).send(:parse, File.read(filename))
                 else
-                  Generator.send(:new, &block)
+                  Generator.send(:new, verbose:, &block)
                 end
     generator.output_context_size
     generator.context
@@ -39,11 +50,15 @@ module ContextSpook
   class Generator
     private_class_method :new
 
-    # The initialize method sets up the object by evaluating the provided block in the object's context.
+    # The initialize method sets up the object by evaluating the provided block
+    # in the object's context.
     #
-    # @param block [ Proc ] A block of code to be evaluated within the object's context.
+    # @param verbose [ TrueClass, FalseClass ] flag to enable verbose
+    #   output during processing, defaults to lfalse.
+    # @param block [ Proc ] a block of code to be evaluated within the object's context
     #                       If no block is given, the method does nothing.
-    def initialize(&block)
+    def initialize(verbose: false, &block)
+      @verbose = verbose
       block and instance_eval(&block)
     end
 
@@ -72,7 +87,9 @@ module ContextSpook
       json_content_size = Tins::Unit.format(
         context_size, format: '%.2f %U', unit: ?b, prefix: 1024
       )
-      STDERR.puts "Built #{json_content_size} of JSON context in total."
+      if @verbose
+        STDERR.puts "Built #{json_content_size} of JSON context in total."
+      end
     end
 
     # The Context class represents and manages project context data, providing
@@ -156,10 +173,14 @@ module ContextSpook
         file_size = Tins::Unit.format(
           File.size(filename), format: '%.2f %U', unit: ?b, prefix: 1024
         )
-        STDERR.puts "Read #{filename.inspect} as JSON (%s) for context." % file_size
+        if @verbose
+          STDERR.puts "Read #{filename.inspect} as JSON (%s) for context." % file_size
+        end
         JSON.load_file(filename)
       rescue Errno::ENOENT => e
-        STDERR.puts color(208) { "Reading #{filename.inspect} as JSON caused #{e.class}: #{e}" }
+        if @verbose
+          STDERR.puts color(208) { "Reading #{filename.inspect} as JSON caused #{e.class}: #{e}" }
+        end
         nil
       end
 
@@ -193,10 +214,14 @@ module ContextSpook
         file_size = Tins::Unit.format(
           content.size, format: '%.2f %U', unit: ?b, prefix: 1024
         )
-        STDERR.puts "Read #{filename.inspect} (%s) for context." % file_size
+        if @verbose
+          STDERR.puts "Read #{filename.inspect} (%s) for context." % file_size
+        end
         nil
       rescue Errno::ENOENT => e
-        STDERR.puts color(208) { "Reading #{filename.inspect} caused #{e.class}: #{e}" }
+        if @verbose
+          STDERR.puts color(208) { "Reading #{filename.inspect} caused #{e.class}: #{e}" }
+        end
       end
 
       # The commands method sets up a DSL accessor for provided command outputs.
@@ -219,7 +244,11 @@ module ContextSpook
         output = `#{shell_command}`
         exit_code = $?&.exitstatus.to_i
         if exit_code != 0
-          STDERR.puts color(208) { "Executing #{shell_command.inspect} resulted in exit code #{exit_code}." }
+          if @verbose
+            STDERR.puts color(208) {
+              "Executing #{shell_command.inspect} resulted in exit code #{exit_code}."
+            }
+          end
         end
         commands[shell_command] = {
           namespace: scope_top,
@@ -231,7 +260,9 @@ module ContextSpook
         output_size = Tins::Unit.format(
           output.size, format: '%.2f %U', unit: ?b, prefix: 1024
         )
-        STDERR.puts "Executed #{shell_command.inspect} with output (%s) for context." % output_size
+        if @verbose
+          STDERR.puts "Executed #{shell_command.inspect} with output (%s) for context." % output_size
+        end
         nil
       end
 
