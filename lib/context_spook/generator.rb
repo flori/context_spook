@@ -10,6 +10,30 @@ require 'yaml'
 module ContextSpook
   include DSLKit::Interpreter
 
+  # The VerbosePuts module provides a conditional output mechanism for
+  # displaying status or debug messages.
+  #
+  # This module includes a method that outputs messages to standard error only
+  # when a verbose flag is enabled. It is designed to be included in classes
+  # that need to conditionally emit verbose logging information during
+  # processing.
+  module VerbosePuts
+    # The verbose_puts method outputs the given arguments to standard error
+    # only if verbose mode is enabled.
+    #
+    # This method serves as a conditional output mechanism, allowing debug or
+    # status messages to be displayed based on the verbosity setting of the
+    # object.
+    #
+    # @param a [ Array ] the arguments to be printed to standard error
+    #
+    # @return [ nil ] always returns nil after attempting to output
+    def verbose_puts(*a)
+      @verbose and return
+      STDERR.puts(a)
+    end
+  end
+
   # The generate_context method processes a context definition file or block
   # and returns the resulting context object.
   #
@@ -49,6 +73,8 @@ module ContextSpook
   # project metadata, file contents, command outputs, and variables for AI
   # assistance.
   class Generator
+    include VerbosePuts
+
     private_class_method :new
 
     # The initialize method sets up the object by evaluating the provided block
@@ -88,15 +114,14 @@ module ContextSpook
       json_content_size = Tins::Unit.format(
         context_size, format: '%.2f %U', unit: ?b, prefix: 1024
       )
-      if @verbose
-        STDERR.puts "Built #{json_content_size} of JSON context in total."
-      end
+      verbose_puts "Built #{json_content_size} of JSON context in total."
     end
 
     # The Context class represents and manages project context data, providing
     # structured storage for file contents, command outputs, variables, and
     # metadata that can be serialized to JSON for AI assistance.
     class Context
+      include VerbosePuts
       include Tins::Scope
       include Tins::DSLAccessor
       include Term::ANSIColor
@@ -178,14 +203,10 @@ module ContextSpook
         file_size = Tins::Unit.format(
           File.size(filename), format: '%.2f %U', unit: ?b, prefix: 1024
         )
-        if @verbose
-          STDERR.puts "Read #{filename.inspect} as JSON (%s) for context." % file_size
-        end
+        verbose_puts "Read #{filename.inspect} as JSON (%s) for context." % file_size
         JSON.load_file(filename)
       rescue Errno::ENOENT, JSON::ParserError => e
-        if @verbose
-          STDERR.puts color(208) { "Reading #{filename.inspect} as JSON caused #{e.class}: #{e}" }
-        end
+        verbose_puts color(208) { "Reading #{filename.inspect} as JSON caused #{e.class}: #{e}" }
         nil
       end
 
@@ -193,14 +214,10 @@ module ContextSpook
         file_size = Tins::Unit.format(
           File.size(filename), format: '%.2f %U', unit: ?b, prefix: 1024
         )
-        if @verbose
-          STDERR.puts "Read #{filename.inspect} as YAML (%s) for context." % file_size
-        end
+        verbose_puts "Read #{filename.inspect} as YAML (%s) for context." % file_size
         YAML.load_file(filename)
       rescue Errno::ENOENT, Psych::SyntaxError => e
-        if @verbose
-          STDERR.puts color(208) { "Reading #{filename.inspect} as YAML caused #{e.class}: #{e}" }
-        end
+        verbose_puts color(208) { "Reading #{filename.inspect} as YAML caused #{e.class}: #{e}" }
         nil
       end
 
@@ -234,14 +251,10 @@ module ContextSpook
         file_size = Tins::Unit.format(
           content.size, format: '%.2f %U', unit: ?b, prefix: 1024
         )
-        if @verbose
-          STDERR.puts "Read #{filename.inspect} (%s) for context." % file_size
-        end
+        verbose_puts "Read #{filename.inspect} (%s) for context." % file_size
         nil
       rescue Errno::ENOENT => e
-        if @verbose
-          STDERR.puts color(208) { "Reading #{filename.inspect} caused #{e.class}: #{e}" }
-        end
+        verbose_puts color(208) { "Reading #{filename.inspect} caused #{e.class}: #{e}" }
       end
 
       # The commands method sets up a DSL accessor for provided command outputs.
@@ -264,11 +277,9 @@ module ContextSpook
         output = `#{shell_command}`
         exit_code = $?&.exitstatus.to_i
         if exit_code != 0
-          if @verbose
-            STDERR.puts color(208) {
-              "Executing #{shell_command.inspect} resulted in exit code #{exit_code}."
-            }
-          end
+          verbose_puts color(208) {
+            "Executing #{shell_command.inspect} resulted in exit code #{exit_code}."
+          }
         end
         commands[shell_command] = {
           namespace: scope_top,
@@ -280,9 +291,7 @@ module ContextSpook
         output_size = Tins::Unit.format(
           output.size, format: '%.2f %U', unit: ?b, prefix: 1024
         )
-        if @verbose
-          STDERR.puts "Executed #{shell_command.inspect} with output (%s) for context." % output_size
-        end
+        verbose_puts "Executed #{shell_command.inspect} with output (%s) for context." % output_size
         nil
       end
 
