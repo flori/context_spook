@@ -51,7 +51,7 @@ def usage
   exit 0
 end
 
-opts     = go 'd:s:o:pvh', defaults: { ?d => ?. }
+opts    = go 'd:s:o:pvh', defaults: { ?d => ?. }
 opts[?h] and usage
 context = nil
 output  = nil
