@@ -45,5 +45,9 @@ context do
 
   meta nixda_json: json('nixda_json.json')
 
+  meta hey_world: yaml('hey_world.yaml')
+
+  meta nixda_yaml: yaml('nixda_yaml.yaml')
+
   meta code_coverage: json('coverage/coverage_context.json')
 end

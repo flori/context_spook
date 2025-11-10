@@ -3,6 +3,7 @@ require 'term/ansicolor'
 require 'json'
 require 'mize'
 require 'mime-types'
+require 'yaml'
 
 # The ContextSpook module serves as a namespace container for collecting and
 # organizing project information for AI assistance.
@@ -58,7 +59,7 @@ module ContextSpook
     # @param block [ Proc ] a block of code to be evaluated within the object's context
     #                       If no block is given, the method does nothing.
     def initialize(verbose: false, &block)
-      @verbose = verbose
+      @verbose = !!verbose
       block and instance_eval(&block)
     end
 
@@ -70,7 +71,7 @@ module ContextSpook
     def context(&block)
       if block
         @context and raise ArgumentError, "only one context allowed"
-        @context = Context.new(&block)
+        @context = Context.new(verbose: @verbose, &block)
       else
         @context
       end
@@ -100,11 +101,15 @@ module ContextSpook
       include Tins::DSLAccessor
       include Term::ANSIColor
 
-      # The initialize method sets up the object by evaluating a block in the
-      # object's context.
+      # The initialize method sets up the object by evaluating the provided block
+      # in the object's context.
       #
-      # @param block [ Proc ] A block to be evaluated within the object's context.
-      def initialize(&block)
+      # @param verbose [ TrueClass, FalseClass ] flag to enable verbose output
+      #   during processing, defaults to false.
+      # @param block [ Proc ] a block of code to be evaluated within the object's context
+      #                       If no block is given, the method does nothing.
+      def initialize(verbose: false, &block)
+        @verbose = !!verbose
         block and instance_eval(&block)
       end
 
@@ -177,9 +182,24 @@ module ContextSpook
           STDERR.puts "Read #{filename.inspect} as JSON (%s) for context." % file_size
         end
         JSON.load_file(filename)
-      rescue Errno::ENOENT => e
+      rescue Errno::ENOENT, JSON::ParserError => e
         if @verbose
           STDERR.puts color(208) { "Reading #{filename.inspect} as JSON caused #{e.class}: #{e}" }
+        end
+        nil
+      end
+
+      def yaml(filename)
+        file_size = Tins::Unit.format(
+          File.size(filename), format: '%.2f %U', unit: ?b, prefix: 1024
+        )
+        if @verbose
+          STDERR.puts "Read #{filename.inspect} as YAML (%s) for context." % file_size
+        end
+        YAML.load_file(filename)
+      rescue Errno::ENOENT, Psych::SyntaxError => e
+        if @verbose
+          STDERR.puts color(208) { "Reading #{filename.inspect} as YAML caused #{e.class}: #{e}" }
         end
         nil
       end

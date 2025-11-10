@@ -36,6 +36,7 @@ GemHadar do
   dependency 'term-ansicolor', '~> 1.11'
   dependency 'mize',           '~> 0.6'
   dependency 'mime-types',     '~> 3.0'
+  dependency 'yaml',           '~> 0.4'
   development_dependency 'all_images', '~> 0.6'
   development_dependency 'rspec',      '~> 3.2'
   development_dependency 'debug'

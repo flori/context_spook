@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe ContextSpook::Generator do
   let :context do
-    ContextSpook.generate_context('.contexts/project.rb')
+    ContextSpook.generate_context('.contexts/project.rb', verbose: true)
   end
 
   it 'context can be generated from block' do
@@ -75,6 +75,14 @@ describe ContextSpook::Generator do
 
     it 'can have metada' do
       expect(context.metadata[:ruby]).to eq RUBY_DESCRIPTION
+    end
+
+    it 'can have json metadata' do
+      expect(context.metadata[:hello_world]).to eq("hello" => "world")
+    end
+
+    it 'can have yaml metadata' do
+      expect(context.metadata[:hey_world]).to eq("hey" => "world")
     end
   end
 end
