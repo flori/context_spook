@@ -31,7 +31,7 @@ GemHadar do
 
   required_ruby_version  '~> 3.1'
 
-  dependency 'tins',           '~>1.39'
+  dependency 'tins',           '~>1.46'
   dependency 'json',           '~>2.0'
   dependency 'term-ansicolor', '~> 1.11'
   dependency 'mize',           '~> 0.6'

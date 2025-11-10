@@ -58,9 +58,9 @@ output  = nil
 if opts[?s]
   context = ContextSpook.generate_context(verbose: opts[?v]) do
     context do
-      Array(opts[?d]).each do |d|
+      opts[?d].each do |d|
         dir = Pathname.new(d).expand_path
-        Array(opts[?s]).each do |suffix|
+        opts[?s].each do |suffix|
           dir_glob = dir + "**/*.#{suffix}"
           Dir[dir_glob].each do |filename|
             file filename
