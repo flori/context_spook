@@ -35,4 +35,5 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency(%q<mize>.freeze, ["~> 0.6".freeze])
   s.add_runtime_dependency(%q<mime-types>.freeze, ["~> 3.0".freeze])
   s.add_runtime_dependency(%q<yaml>.freeze, ["~> 0.4".freeze])
+  s.add_runtime_dependency(%q<pathname>.freeze, ["~> 0.4".freeze])
 end

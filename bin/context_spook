@@ -4,6 +4,7 @@ require 'context_spook'
 require 'tins/go'
 include Tins::GO
 require 'json'
+require 'pathname'
 
 # The usage method displays the command-line interface help text and example
 # usage patterns for the ContextSpook tool.
@@ -23,29 +24,55 @@ def usage
     -o FILE    Write output to FILE instead of stdout
     -v         Verbose output
     -h         Show this help message
+    -d DIR     Directory to search for files (defaults to current dir, can be
+               used multiple times)
+    -s SUFFIX  File suffix to include (can be used multiple times)
 
   Examples:
     # Generate context and output to stdout
     #{File.basename($0)} .contexts/project.rb
 
-    # Generate context and save to file
-    #{File.basename($0)} .contexts/project.rb -o context.json
+    # Generate context from directory globs
+    #{File.basename($0)} -d lib -d spec -s rb
 
     # Generate context with verbose output
     #{File.basename($0)} .contexts/project.rb -v
 
-    # Generate context and pipe to another tool
-    #{File.basename($0)} .contexts/project.rb | ollama_chat_send
+    # Generate context from directory globs with verbose output
+    #{File.basename($0)} -d lib -d spec -s rb -v
+
+    # Generate context and save to file
+    #{File.basename($0)} .contexts/project.rb -o context.json
+
+    # Generate context from directory globs and save to file
+    #{File.basename($0)} -d lib -d spec -s rb -o context.json
 
   EOT
   exit 0
 end
 
-opts     = go 'o:pvh'
+opts     = go 'd:s:o:pvh', defaults: { ?d => ?. }
 opts[?h] and usage
+context = nil
+output  = nil
+if opts[?s]
+  context = ContextSpook.generate_context(verbose: opts[?v]) do
+    context do
+      Array(opts[?d]).each do |d|
+        dir = Pathname.new(d).expand_path
+        Array(opts[?s]).each do |suffix|
+          dir_glob = dir + "**/*.#{suffix}"
+          Dir[dir_glob].each do |filename|
+            file filename
+          end
+        end
+      end
+    end
+  end
+else
 filename = ARGV.shift or fail 'require context definition file as an argument'
-output   = nil
-context  = ContextSpook.generate_context(filename, verbose: opts[?v])
+  context = ContextSpook.generate_context(filename, verbose: opts[?v])
+end
 if output_filename = opts[?o]
   if File.exist?(output_filename)
     fail "Filename #{output_filename.inspect} already exists!"

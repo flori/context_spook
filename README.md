@@ -154,6 +154,17 @@ The CLI tool also supports file redirection:
 ./bin/context_spook .contexts/project.rb -o context.json
 ```
 
+You can also use directory globbing to automatically collect files without
+manually specifying each one:
+
+```bash
+# Collect all Ruby files from lib/ and spec/ directories
+./bin/context_spook -d lib -d spec -s rb
+
+# Collect Markdown and YAML files from current directory
+./bin/context_spook -s md -s yaml
+```
+
 This is how you can show the usage message:
 
 ```
