@@ -132,12 +132,34 @@ Generate context and save to file:
 
 Or pipe directly to another tool:
 
-```
+```bash
 ./bin/context_spook .contexts/project.rb | ollama_chat_send
 ```
 
-You will see two orange warning messages, that demonstrates how errors like
+
+The CLI tool also supports verbose output:
+
+```bash
+# Generate context with verbose output
+./bin/context_spook .contexts/project.rb -v
+```
+
+Now you can see two orange warning messages, that demonstrates how errors like
 missing files or commands with failing exit codes are handled.
+
+The CLI tool also supports file redirection:
+
+```bash
+# Generate context and save to file
+./bin/context_spook .contexts/project.rb -o context.json
+```
+
+This is how you can show the usage message:
+
+```
+# Show help
+./bin/context_spook -h
+```
 
 ## What Gets Collected
 
