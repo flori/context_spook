@@ -136,7 +136,6 @@ Or pipe directly to another tool:
 ./bin/context_spook .contexts/project.rb | ollama_chat_send
 ```
 
-
 The CLI tool also supports verbose output:
 
 ```bash
@@ -163,6 +162,14 @@ manually specifying each one:
 
 # Collect Markdown and YAML files from current directory
 ./bin/context_spook -s md -s yaml
+
+# Generate context with explicit suffix hints
+# -d lib:rb collects only .rb files from lib/
+# -d bin:all collects all files from bin/ (no suffix filtering)
+./bin/context_spook -d lib:rb -d bin:all
+
+# Same result using default -s suffix all
+./bin/context_spook -d lib:rb -d bin
 ```
 
 This is how you can show the usage message:

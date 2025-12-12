@@ -21,12 +21,13 @@ def usage
   Usage: #{File.basename($0)} [options] <context_definition_file>
 
   Options:
-    -o FILE    Write output to FILE instead of stdout
-    -v         Verbose output (default), disable with ~v
-    -h         Show this help message
-    -d DIR     Directory to search for files (defaults to current dir, can be
-               used multiple times)
-    -s SUFFIX  File suffix to include (can be used multiple times)
+    -o FILE      Write output to FILE instead of stdout
+    ~v           Disable verbose output, enabled by default
+    -h           Show this help message
+    -d DIR[:SFX] Directory to search for files (can be used multiple times),
+                 if SFX is given will only consider files with this suffix,
+                 otherwise the -s argument value is used.
+    -s SUFFIX    File suffix to include, defaults to all
 
   Examples:
     # Generate context and output to stdout
@@ -35,11 +36,8 @@ def usage
     # Generate context from directory globs
     #{File.basename($0)} -d lib -d spec -s rb
 
-    # Generate context with verbose output
-    #{File.basename($0)} .contexts/project.rb -v
-
-    # Generate context from directory globs with verbose output
-    #{File.basename($0)} -d lib -d spec -s rb -v
+    # Generate context without verbose output
+    #{File.basename($0)} .contexts/project.rb ~v
 
     # Generate context and save to file
     #{File.basename($0)} .contexts/project.rb -o context.json
@@ -47,30 +45,39 @@ def usage
     # Generate context from directory globs and save to file
     #{File.basename($0)} -d lib -d spec -s rb -o context.json
 
+    # Generate context with explicit suffix hints
+    # -d lib:rb collects only .rb files from lib/
+    # -d bin:all collects all files from bin/ (no suffix filtering)
+    #{File.basename($0)} -d lib:rb -d bin:all
+
+    # Same result using default -s suffix all
+    #{File.basename($0)} -d lib:rb -d bin
   EOT
   exit 0
 end
 
-opts    = go 'd:s:o:pvh', defaults: { ?d => ?., ?v => true }
+opts    = go 'd:s:o:pvh', defaults: { ?v => true, ?s => 'all' }
 opts[?h] and usage
 context = nil
 output  = nil
-if opts[?s]
+if opts[?d]
+  suffix_arg = opts[?s]
   context = ContextSpook.generate_context(verbose: opts[?v]) do
     context do
-      opts[?d].to_a.each do |d|
-        dir = Pathname.new(d).expand_path
-        opts[?s].to_a.each do |suffix|
-          dir_glob = dir + "**/*.#{suffix}"
-          Dir[dir_glob].each do |filename|
-            file filename
-          end
+      dirs_sfx = opts[?d].to_a.map { |d| d =~ /:/ ? d : "#{d}:#{suffix_arg}" }
+      dirs_sfx.each do |ds|
+        dir, suffix = ds.split(?:, 2)
+        dir = Pathname.new(dir).expand_path
+        dir_glob = dir + (suffix == 'all' ? '**/*' : "**/*.#{suffix}")
+        Dir[dir_glob].each do |filename|
+          Pathname.new(filename).file? or next
+          file filename
         end
       end
     end
   end
 else
-filename = ARGV.shift or fail 'require context definition file as an argument'
+  filename = ARGV.shift or fail 'require context definition file as an argument'
   context = ContextSpook.generate_context(filename, verbose: opts[?v])
 end
 if output_filename = opts[?o]
