@@ -140,8 +140,8 @@ Or pipe directly to another tool:
 The CLI tool also supports verbose output:
 
 ```bash
-# Generate context with verbose output
-./bin/context_spook .contexts/project.rb -v
+# Generate context without verbose output
+./bin/context_spook .contexts/project.rb ~v
 ```
 
 Now you can see two orange warning messages, that demonstrates how errors like

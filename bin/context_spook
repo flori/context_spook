@@ -22,7 +22,7 @@ def usage
 
   Options:
     -o FILE    Write output to FILE instead of stdout
-    -v         Verbose output
+    -v         Verbose output (default), disable with ~v
     -h         Show this help message
     -d DIR     Directory to search for files (defaults to current dir, can be
                used multiple times)
@@ -51,7 +51,7 @@ def usage
   exit 0
 end
 
-opts    = go 'd:s:o:pvh', defaults: { ?d => ?. }
+opts    = go 'd:s:o:pvh', defaults: { ?d => ?., ?v => true }
 opts[?h] and usage
 context = nil
 output  = nil
