@@ -153,23 +153,20 @@ The CLI tool also supports file redirection:
 ./bin/context_spook .contexts/project.rb -o context.json
 ```
 
-You can also use directory globbing to automatically collect files without
+You can also use include patterns to automatically collect files without
 manually specifying each one:
 
 ```bash
 # Collect all Ruby files from lib/ and spec/ directories
-./bin/context_spook -d lib -d spec -s rb
+./bin/context_spook -i 'lib/**/*.rb' -i 'spec/**/*.rb'
 
 # Collect Markdown and YAML files from current directory
-./bin/context_spook -s md -s yaml
+./bin/context_spook -i '*.md' -i '*.yaml' -i '*.yml'
 
-# Generate context with explicit suffix hints
-# -d lib:rb collects only .rb files from lib/
-# -d bin:all collects all files from bin/ (no suffix filtering)
-./bin/context_spook -d lib:rb -d bin:all
-
-# Same result using default -s suffix all
-./bin/context_spook -d lib:rb -d bin
+# Collect files with complex patterns
+./bin/context_spook -i 'lib/**/{*.rb,*.rake}'     # Brace expansion
+./bin/context_spook -i 'lib/**/*_spec.rb'         # Pattern matching
+./bin/context_spook -i 'lib/**/*.rb' -i 'spec/**/*_spec.rb'  # Mixed patterns
 ```
 
 This is how you can show the usage message:
