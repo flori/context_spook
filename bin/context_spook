@@ -59,6 +59,7 @@ if opts[?i]
   context = ContextSpook.generate_context(verbose: opts[?v]) do
     context do
       opts[?i].to_a.each do |glob|
+        glob = File.expand_path(glob)
         Dir.glob(glob).each do |filename|
           Pathname.new(filename).file? or next
           file filename
