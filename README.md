@@ -127,20 +127,20 @@ File.write 'context.json', context.to_json
 Generate context and save to file:
 
 ```bash
-./bin/context_spook .contexts/project.rb > context.json
+context_spook .contexts/project.rb > context.json
 ```
 
 Or pipe directly to another tool:
 
 ```bash
-./bin/context_spook .contexts/project.rb | ollama_chat_send
+context_spook .contexts/project.rb | ollama_chat_send
 ```
 
 The CLI tool also supports verbose output:
 
 ```bash
 # Generate context without verbose output
-./bin/context_spook .contexts/project.rb ~v
+context_spook .contexts/project.rb ~v
 ```
 
 Now you can see two orange warning messages, that demonstrates how errors like
@@ -150,7 +150,7 @@ The CLI tool also supports file redirection:
 
 ```bash
 # Generate context and save to file
-./bin/context_spook .contexts/project.rb -o context.json
+context_spook .contexts/project.rb -o context.json
 ```
 
 You can also use include patterns to automatically collect files without
@@ -158,22 +158,33 @@ manually specifying each one:
 
 ```bash
 # Collect all Ruby files from lib/ and spec/ directories
-./bin/context_spook -i 'lib/**/*.rb' -i 'spec/**/*.rb'
+context_spook -i 'lib/**/*.rb' -i 'spec/**/*.rb'
 
 # Collect Markdown and YAML files from current directory
-./bin/context_spook -i '*.md' -i '*.yaml' -i '*.yml'
+context_spook -i '*.md' -i '*.yaml' -i '*.yml'
 
 # Collect files with complex patterns
-./bin/context_spook -i 'lib/**/{*.rb,*.rake}'     # Brace expansion
-./bin/context_spook -i 'lib/**/*_spec.rb'         # Pattern matching
-./bin/context_spook -i 'lib/**/*.rb' -i 'spec/**/*_spec.rb'  # Mixed patterns
+context_spook -i 'lib/**/{*.rb,*.rake}'     # Brace expansion
+context_spook -i 'lib/**/*_spec.rb'         # Pattern matching
+context_spook -i 'lib/**/*.rb' -i 'spec/**/*_spec.rb'  # Mixed patterns
 ```
+
+### Size Estimation
+
+To estimate the size of your context without generating the large output file:
+
+```bash
+# Show context size information only
+context_spook .contexts/project.rb -S
+```
+
+This is useful for optimizing context size before committing to large output files.
 
 This is how you can show the usage message:
 
 ```
 # Show help
-./bin/context_spook -h
+context_spook -h
 ```
 
 ## What Gets Collected
@@ -232,4 +243,4 @@ assistants understand:
 
 ## License
 
-The gem is available as open source under the terms of the [MIT License](./LICENSE)
+The gem is available as open source under the terms of the [MIT License](LICENSE)

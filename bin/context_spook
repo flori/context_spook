@@ -22,10 +22,11 @@ def usage
 
   Options:
     -o FILE      Write output to FILE instead of stdout
-    ~v           Disable verbose output, enabled by default
-    -h           Show this help message
+    ~v           Disable verbose informational output, enabled by default
+    -S           suppress output (just show informational output)
     -i PATTERN   Include files matching PATTERN (can be used multiple times)
                  Supports glob patterns like **, *, ?, [abc], {a,b,c}
+    -h           Show this help message
 
   Examples:
     # Generate context and output to stdout
@@ -44,13 +45,16 @@ def usage
     # Generate context without verbose output
     #{File.basename($0)} .contexts/project.rb ~v
 
+    # Generate informational output only to estimate context size
+    #{File.basename($0)} .contexts/project.rb -S
+
     # Generate context and save to file
     #{File.basename($0)} .contexts/project.rb -o context.json
   EOT
   exit 0
 end
 
-opts    = go 'o:i:pvh', defaults: { ?v => true }
+opts    = go 'o:i:pvSh', defaults: { ?v => true }
 opts[?h] and usage
 context = nil
 output  = nil
@@ -72,12 +76,16 @@ else
   context = ContextSpook.generate_context(filename, verbose: opts[?v])
 end
 
-if output_filename = opts[?o]
-  if File.exist?(output_filename)
-    fail "Filename #{output_filename.inspect} already exists!"
-  end
-  output = File.new output_filename, ?w
+if opts[?S]
+  output = NULL
 else
-  output = STDOUT
+  if output_filename = opts[?o]
+    if File.exist?(output_filename)
+      fail "Filename #{output_filename.inspect} already exists!"
+    end
+    output = File.new output_filename, ?w
+  else
+    output = STDOUT
+  end
 end
 JSON.dump(context.as_json, output)
