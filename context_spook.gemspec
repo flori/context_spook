@@ -18,7 +18,7 @@ Gem::Specification.new do |s|
   s.licenses = ["MIT".freeze]
   s.rdoc_options = ["--title".freeze, "ContextSpook - context_spook collects project context for AI".freeze, "--main".freeze, "README.md".freeze]
   s.required_ruby_version = Gem::Requirement.new(">= 3.1".freeze)
-  s.rubygems_version = "4.0.2".freeze
+  s.rubygems_version = "4.0.3".freeze
   s.summary = "context_spook collects project context for AI".freeze
   s.test_files = ["spec/context_spook/generator_spec.rb".freeze, "spec/spec_helper.rb".freeze]
 
