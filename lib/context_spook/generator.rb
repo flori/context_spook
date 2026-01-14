@@ -4,6 +4,7 @@ require 'json'
 require 'mize'
 require 'mime-types'
 require 'yaml'
+require 'context_spook/toon'
 
 # The ContextSpook module serves as a namespace container for collecting and
 # organizing project information for AI assistance.
@@ -111,11 +112,9 @@ module ContextSpook
     # JSON, formats it using binary units (KiB, MiB, etc.), and outputs the
     # result to standard error.
     def output_context_size
-      context_size = @context&.size.to_i
-      json_content_size = Tins::Unit.format(
-        context_size, format: '%.2f %U', unit: ?b, prefix: 1024
-      )
-      verbose_puts "Built #{json_content_size} of JSON context in total."
+      context_size      = @context&.size.to_i
+      json_context_size = ContextSpook::Utils.format_size(context_size)
+      verbose_puts "Built #{json_context_size} of JSON context in total."
     end
 
     # The Context class represents and manages project context data, providing
@@ -126,6 +125,7 @@ module ContextSpook
       include Tins::Scope
       include Tins::DSLAccessor
       include Term::ANSIColor
+      include ContextSpook::TOON
 
       # The initialize method sets up the object by evaluating the provided block
       # in the object's context.

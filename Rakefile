@@ -38,6 +38,7 @@ GemHadar do
   dependency 'mime-types',     '~> 3.0'
   dependency 'yaml',           '~> 0.4'
   dependency 'pathname',       '~> 0.4'
+  dependency 'ruby-json-toon', '~> 1.0'
   development_dependency 'all_images', '~> 0.6'
   development_dependency 'rspec',      '~> 3.2'
   development_dependency 'debug'

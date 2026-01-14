@@ -26,6 +26,7 @@ def usage
     -S           suppress output (just show informational output)
     -i PATTERN   Include files matching PATTERN (can be used multiple times)
                  Supports glob patterns like **, *, ?, [abc], {a,b,c}
+    -F FORMAT    Output context as format JSON (the default) or TOON
     -h           Show this help message
 
   Examples:
@@ -54,7 +55,7 @@ def usage
   exit 0
 end
 
-opts    = go 'o:i:pvSh', defaults: { ?v => true }
+opts    = go 'o:i:F:pvSh', defaults: { ?v => true }
 opts[?h] and usage
 context = nil
 output  = nil
@@ -88,4 +89,14 @@ else
     output = STDOUT
   end
 end
-JSON.dump(context.as_json, output)
+case opts[?F]
+when /\ATOON\z/i
+  if opts[?v]
+    STDERR.puts "Built #{ContextSpook::Utils.format_size(context.toon_size)} of TOON context in total."
+  end
+  output.puts context.to_toon
+when /\AJSON\z/i, nil
+  JSON.dump(context.as_json, output)
+else
+  STDERR.puts "Invalid output format #{opts[?F].inspect}"
+end

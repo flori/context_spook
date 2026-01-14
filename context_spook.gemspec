@@ -12,8 +12,8 @@ Gem::Specification.new do |s|
   s.description = "context_spook is a library that collects and organizes project\ninformation to help AI assistants understand codebases better.\n".freeze
   s.email = "flori@ping.de".freeze
   s.executables = ["context_spook".freeze]
-  s.extra_rdoc_files = ["README.md".freeze, "lib/context_spook.rb".freeze, "lib/context_spook/generator.rb".freeze, "lib/context_spook/version.rb".freeze]
-  s.files = [".contexts/project.rb".freeze, "Gemfile".freeze, "LICENSE".freeze, "README.md".freeze, "Rakefile".freeze, "bin/context_spook".freeze, "context_spook.gemspec".freeze, "hello_world.json".freeze, "hey_world.yaml".freeze, "lib/context_spook.rb".freeze, "lib/context_spook/generator.rb".freeze, "lib/context_spook/version.rb".freeze, "spec/context_spook/generator_spec.rb".freeze, "spec/spec_helper.rb".freeze]
+  s.extra_rdoc_files = ["README.md".freeze, "lib/context_spook.rb".freeze, "lib/context_spook/generator.rb".freeze, "lib/context_spook/toon.rb".freeze, "lib/context_spook/utils.rb".freeze, "lib/context_spook/version.rb".freeze]
+  s.files = [".contexts/project.rb".freeze, "Gemfile".freeze, "LICENSE".freeze, "README.md".freeze, "Rakefile".freeze, "bin/context_spook".freeze, "context_spook.gemspec".freeze, "hello_world.json".freeze, "hey_world.yaml".freeze, "lib/context_spook.rb".freeze, "lib/context_spook/generator.rb".freeze, "lib/context_spook/toon.rb".freeze, "lib/context_spook/utils.rb".freeze, "lib/context_spook/version.rb".freeze, "spec/context_spook/generator_spec.rb".freeze, "spec/spec_helper.rb".freeze]
   s.homepage = "https://github.com/flori/context_spook".freeze
   s.licenses = ["MIT".freeze]
   s.rdoc_options = ["--title".freeze, "ContextSpook - context_spook collects project context for AI".freeze, "--main".freeze, "README.md".freeze]
@@ -36,4 +36,5 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency(%q<mime-types>.freeze, ["~> 3.0".freeze])
   s.add_runtime_dependency(%q<yaml>.freeze, ["~> 0.4".freeze])
   s.add_runtime_dependency(%q<pathname>.freeze, ["~> 0.4".freeze])
+  s.add_runtime_dependency(%q<ruby-json-toon>.freeze, ["~> 1.0".freeze])
 end
