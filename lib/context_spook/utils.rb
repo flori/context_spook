@@ -1,3 +1,5 @@
+# The ContextSpook::Utils module provides utility methods for formatting and
+# processing context data.
 module ContextSpook::Utils
   module_function
 
