@@ -61,7 +61,7 @@ context = nil
 output  = nil
 
 if opts[?i]
-  context = ContextSpook.generate_context(verbose: opts[?v]) do
+  context = ContextSpook.generate_context(verbose: opts[?v], format: opts[?F]) do
     context do
       opts[?i].to_a.each do |glob|
         glob = File.expand_path(glob)
@@ -74,9 +74,10 @@ if opts[?i]
   end
 else
   filename = ARGV.shift or fail 'require context definition file as an argument'
-  context = ContextSpook.generate_context(filename, verbose: opts[?v])
+  context = ContextSpook.generate_context(filename, verbose: opts[?v], format: opts[?F])
 end
 
+output = STDOUT
 if opts[?S]
   output = NULL
 else
@@ -85,18 +86,11 @@ else
       fail "Filename #{output_filename.inspect} already exists!"
     end
     output = File.new output_filename, ?w
-  else
-    output = STDOUT
   end
 end
 case opts[?F]
-when /\ATOON\z/i
-  if opts[?v]
-    STDERR.puts "Built #{ContextSpook::Utils.format_size(context.toon_size)} of TOON context in total."
-  end
-  output.puts context.to_toon
-when /\AJSON\z/i, nil
-  JSON.dump(context.as_json, output)
+when /\A(JSON|TOON)\z/i, nil
+  context.generator.output_context(output:)
 else
   STDERR.puts "Invalid output format #{opts[?F].inspect}"
 end

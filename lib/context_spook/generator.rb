@@ -5,35 +5,13 @@ require 'mize'
 require 'mime-types'
 require 'yaml'
 require 'context_spook/toon'
+require 'context_spook/verbose_puts'
+require 'context_spook/output_context'
 
 # The ContextSpook module serves as a namespace container for collecting and
 # organizing project information for AI assistance.
 module ContextSpook
   include DSLKit::Interpreter
-
-  # The VerbosePuts module provides a conditional output mechanism for
-  # displaying status or debug messages.
-  #
-  # This module includes a method that outputs messages to standard error only
-  # when a verbose flag is enabled. It is designed to be included in classes
-  # that need to conditionally emit verbose logging information during
-  # processing.
-  module VerbosePuts
-    # The verbose_puts method outputs the given arguments to standard error
-    # only if verbose mode is enabled.
-    #
-    # This method serves as a conditional output mechanism, allowing debug or
-    # status messages to be displayed based on the verbosity setting of the
-    # object.
-    #
-    # @param a [ Array ] the arguments to be printed to standard error
-    #
-    # @return [ nil ] always returns nil after attempting to output
-    def verbose_puts(*a)
-      @verbose or return
-      STDERR.puts(a)
-    end
-  end
 
   # The generate_context method processes a context definition file or block
   # and returns the resulting context object.
@@ -57,14 +35,14 @@ module ContextSpook
   #
   # @raise [ ArgumentError ] if neither a filename nor a block is provided
   # @raise [ ArgumentError ] if both a filename and a block are provided
-  def self.generate_context(filename = nil, verbose: false, &block)
+  def self.generate_context(filename = nil, verbose: false, format: nil, &block)
     verbose = !!verbose
     filename.present? ^ block or
       raise ArgumentError, 'need either a filename or a &block argument'
     generator = if filename
-                  Generator.send(:new, verbose:).send(:parse, File.read(filename))
+                  Generator.send(:new, verbose:, format:).send(:parse, File.read(filename))
                 else
-                  Generator.send(:new, verbose:, &block)
+                  Generator.send(:new, verbose:, format:, &block)
                 end
     generator.output_context_size
     generator.context
@@ -76,6 +54,9 @@ module ContextSpook
   # assistance.
   class Generator
     include VerbosePuts
+    include OutputContext
+
+    attr_reader :verbose
 
     private_class_method :new
 
@@ -86,8 +67,9 @@ module ContextSpook
     #   output during processing, defaults to lfalse.
     # @param block [ Proc ] a block of code to be evaluated within the object's context
     #                       If no block is given, the method does nothing.
-    def initialize(verbose: false, &block)
+    def initialize(verbose: false, format: nil, &block)
       @verbose = !!verbose
+      @format  = (format || 'JSON').upcase
       block and instance_eval(&block)
     end
 
@@ -99,22 +81,10 @@ module ContextSpook
     def context(&block)
       if block
         @context and raise ArgumentError, "only one context allowed"
-        @context = Context.new(verbose: @verbose, &block)
+        @context = Context.new(generator: self, &block)
       else
         @context
       end
-    end
-
-    # The output_context_size method prints the total size of the generated
-    # context JSON representation.
-    #
-    # This method calculates the size of the context object when serialized to
-    # JSON, formats it using binary units (KiB, MiB, etc.), and outputs the
-    # result to standard error.
-    def output_context_size
-      context_size      = @context&.size.to_i
-      json_context_size = ContextSpook::Utils.format_size(context_size)
-      verbose_puts "Built #{json_context_size} of JSON context in total."
     end
 
     # The Context class represents and manages project context data, providing
@@ -134,10 +104,14 @@ module ContextSpook
       #   during processing, defaults to false.
       # @param block [ Proc ] a block of code to be evaluated within the object's context
       #                       If no block is given, the method does nothing.
-      def initialize(verbose: false, &block)
-        @verbose = !!verbose
+      def initialize(generator:, &block)
+        @generator = generator
         block and instance_eval(&block)
       end
+
+      attr_reader :generator
+
+      delegate :verbose, to: :generator
 
       # The namespace method creates a scoped block with a given name.
       #
