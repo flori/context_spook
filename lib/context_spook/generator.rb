@@ -56,7 +56,17 @@ module ContextSpook
     include VerbosePuts
     include OutputContext
 
+    # The verbose method returns the verbose flag indicating whether verbose
+    # output is enabled.
+    #
+    # @return [ TrueClass, FalseClass ] true if verbose output is enabled,
+    #   false otherwise
     attr_reader :verbose
+
+    # The format method returns the format identifier for the context output.
+    #
+    # @return [ String ] the format identifier, either 'JSON' or 'TOON'
+    attr_reader :format
 
     private_class_method :new
 
@@ -107,8 +117,17 @@ module ContextSpook
       def initialize(generator:, &block)
         @generator = generator
         block and instance_eval(&block)
+        meta(format: generator.format)
+        if generator.format == 'TOON'
+          meta(toon_example: toon_example)
+        end
       end
 
+      # The generator method returns the generator object associated with this
+      # context.
+      #
+      # @return [ ContextSpook::Generator ] the generator instance that created
+      #   this context
       attr_reader :generator
 
       delegate :verbose, to: :generator
