@@ -1,9 +1,9 @@
 # -*- encoding: utf-8 -*-
-# stub: context_spook 1.3.0 ruby lib
+# stub: context_spook 1.4.0 ruby lib
 
 Gem::Specification.new do |s|
   s.name = "context_spook".freeze
-  s.version = "1.3.0".freeze
+  s.version = "1.4.0".freeze
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0".freeze) if s.respond_to? :required_rubygems_version=
   s.require_paths = ["lib".freeze]
@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
   s.email = "flori@ping.de".freeze
   s.executables = ["context_spook".freeze]
   s.extra_rdoc_files = ["README.md".freeze, "lib/context_spook.rb".freeze, "lib/context_spook/generator.rb".freeze, "lib/context_spook/output_context.rb".freeze, "lib/context_spook/toon.rb".freeze, "lib/context_spook/utils.rb".freeze, "lib/context_spook/verbose_puts.rb".freeze, "lib/context_spook/version.rb".freeze]
-  s.files = [".contexts/project.rb".freeze, "Gemfile".freeze, "LICENSE".freeze, "README.md".freeze, "Rakefile".freeze, "bin/context_spook".freeze, "context_spook.gemspec".freeze, "hello_world.json".freeze, "hey_world.yaml".freeze, "lib/context_spook.rb".freeze, "lib/context_spook/generator.rb".freeze, "lib/context_spook/output_context.rb".freeze, "lib/context_spook/toon.rb".freeze, "lib/context_spook/utils.rb".freeze, "lib/context_spook/verbose_puts.rb".freeze, "lib/context_spook/version.rb".freeze, "spec/context_spook/generator_spec.rb".freeze, "spec/context_spook/toon_spec.rb".freeze, "spec/spec_helper.rb".freeze]
+  s.files = [".contexts/project.rb".freeze, "Gemfile".freeze, "LICENSE".freeze, "README.md".freeze, "Rakefile".freeze, "bin/context_spook".freeze, "context_spook.gemspec".freeze, "hello_world.json".freeze, "hey_world.yaml".freeze, "lib/context_spook.rb".freeze, "lib/context_spook/generator.rb".freeze, "lib/context_spook/output_context.rb".freeze, "lib/context_spook/toon.rb".freeze, "lib/context_spook/toon/example.md".freeze, "lib/context_spook/utils.rb".freeze, "lib/context_spook/verbose_puts.rb".freeze, "lib/context_spook/version.rb".freeze, "spec/context_spook/generator_spec.rb".freeze, "spec/context_spook/toon_spec.rb".freeze, "spec/spec_helper.rb".freeze]
   s.homepage = "https://github.com/flori/context_spook".freeze
   s.licenses = ["MIT".freeze]
   s.rdoc_options = ["--title".freeze, "ContextSpook - context_spook collects project context for AI".freeze, "--main".freeze, "README.md".freeze]
