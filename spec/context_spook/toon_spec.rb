@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe ContextSpook::TOON do
-  let(:context) do
+  let(:my_context) do
     ContextSpook.generate_context do
       context do
         variable foo: 'bar'
@@ -13,13 +13,13 @@ describe ContextSpook::TOON do
 
   describe '#to_toon' do
     it 'converts context to TOON format' do
-      toon_output = context.to_toon
+      toon_output = my_context.to_toon
       expect(toon_output).to be_a(String)
       expect(toon_output).to_not be_empty
     end
 
     it 'produces valid TOON output' do
-      toon_output = context.to_toon
+      toon_output = my_context.to_toon
       expect(toon_output).to match(
         %r{
           \Afiles:\n
@@ -41,26 +41,26 @@ describe ContextSpook::TOON do
 
   describe '#toon_size' do
     it 'returns the size of TOON representation in bytes' do
-      size = context.toon_size
+      size = my_context.toon_size
       expect(size).to be_a(Integer)
       expect(size).to be > 0
     end
 
     it 'matches the size of the TOON output' do
-      size = context.toon_size
-      toon_output = context.to_toon
+      size = my_context.toon_size
+      toon_output = my_context.to_toon
       expect(size).to eq(toon_output.size)
     end
   end
 
   describe 'integration with ContextSpook::Generator::Context' do
     it 'is included in Context class' do
-      expect(context).to respond_to(:to_toon)
-      expect(context).to respond_to(:toon_size)
+      expect(my_context).to respond_to(:to_toon)
+      expect(my_context).to respond_to(:toon_size)
     end
 
     it 'works with context data' do
-      toon_output = context.to_toon
+      toon_output = my_context.to_toon
       expect(toon_output).to include('variables:')
       expect(toon_output).to include('metadata:')
       expect(toon_output).to include('files:')
