@@ -20,8 +20,22 @@ describe ContextSpook::TOON do
 
     it 'produces valid TOON output' do
       toon_output = context.to_toon
-      # TOON should be a valid string representation
-      expect { RubyJsonToon.decode(toon_output) }.not_to raise_error
+      expect(toon_output).to match(
+        %r{
+          \Afiles:\n
+          ^[ ]{2}"lib/context_spook\.rb":\n
+          ^[ ]{4}content:[ ]"[^"]+"\n
+          ^[ ]{4}size:[ ]120\n
+          ^[ ]{4}lines:[ ]5\n
+          ^[ ]{4}content_types\[2\]:[ ]application/x-ruby,text/x-ruby\n
+          ^commands:\n
+          ^metadata:\n
+          ^[ ]{2}version:[ ]"1\.0"\n
+          ^[ ]{2}format:[ ]JSON\n
+          ^variables:\n
+          ^[ ]{2}foo:[ ]bar\z
+        }x
+      )
     end
   end
 

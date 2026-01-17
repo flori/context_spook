@@ -1,4 +1,4 @@
-require 'ruby_json_toon'
+require 'toon'
 
 # The ContextSpook::TOON module provides TOON (Token-Oriented Object Notation)
 # serialization functionality for context objects.
@@ -7,7 +7,7 @@ module ContextSpook::TOON
   #
   # @return [String] the TOON-encoded representation of the context
   def to_toon
-    RubyJsonToon.encode(as_json)
+    ::Toon.encode(as_json)
   end
   memoize method: :to_toon
 

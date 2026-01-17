@@ -36,5 +36,5 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency(%q<mime-types>.freeze, ["~> 3.0".freeze])
   s.add_runtime_dependency(%q<yaml>.freeze, ["~> 0.4".freeze])
   s.add_runtime_dependency(%q<pathname>.freeze, ["~> 0.4".freeze])
-  s.add_runtime_dependency(%q<ruby-json-toon>.freeze, ["~> 1.0".freeze])
+  s.add_runtime_dependency(%q<toon-ruby>.freeze, [">= 0.1".freeze])
 end
