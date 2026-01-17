@@ -272,7 +272,9 @@ module ContextSpook
       # The commands method sets up a DSL accessor for provided command outputs.
       #
       # @param value [ Hash ] the hash of commands to be set
-      dsl_accessor :commands, {}
+      dsl_accessor :commands do
+        {}
+      end
 
       # The command method executes a shell command and stores its result.
       #
