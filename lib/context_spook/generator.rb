@@ -13,28 +13,30 @@ require 'context_spook/output_context'
 module ContextSpook
   include DSLKit::Interpreter
 
-  # The generate_context method processes a context definition file or block
-  # and returns the resulting context object.
+  # The generate_context method creates a context object by either evaluating a
+  # block or parsing a file
   #
-  # This method serves as the primary entry point for generating project
-  # context data. It accepts either a filename pointing to a context definition
-  # file or a block containing the context definition, but not both.
-  # When a filename is provided, it reads and parses the file content. When a
-  # block is provided, it evaluates the block within the generator's context.
-  # The method ensures that only one context definition mechanism is used.
+  # This method serves as the primary entry point for generating context data.
+  # It accepts either a filename pointing to a context definition file or a
+  # block containing the context definition. The method handles the creation of
+  # a generator instance, processes the context definition, and returns the
+  # resulting context object.
   #
-  # @param filename [ String, nil ] the path to the context definition file to
-  #   be processed
+  # @param filename [ String, nil ] the path to a context definition file, or
+  #   nil if using a block
   # @param verbose [ TrueClass, FalseClass ] flag to enable verbose output
-  #   during processing, defaults to false.
-  # @param block [ Proc ] a block containing the context definition to be
-  #   evaluated
+  #   during processing
+  # @param format [ String, nil ] the output format for the context, either
+  #   'JSON' or 'TOON'
+  # @param block [ Proc ] a block containing the context definition, used if
+  #   filename is nil
   #
-  # @return [ ContextSpook::Generator::Context ] the context object generated
-  #   from the file contents or block
+  # @return [ ContextSpook::Generator::Context ] the generated context object containing
+  #   project metadata, file contents, command outputs, and variables
   #
   # @raise [ ArgumentError ] if neither a filename nor a block is provided
-  # @raise [ ArgumentError ] if both a filename and a block are provided
+  # @raise [ ArgumentError ] if an invalid format is specified
+  # @raise [ ArgumentError ] if the context definition file cannot be read or parsed
   def self.generate_context(filename = nil, verbose: false, format: nil, &block)
     verbose = !!verbose
     filename.present? ^ block or
@@ -80,6 +82,9 @@ module ContextSpook
     def initialize(verbose: false, format: nil, &block)
       @verbose = !!verbose
       @format  = (format || 'JSON').upcase
+      %w[ TOON JSON ].include?(@format) or
+        raise ArgumentError,
+          "format needs to be either JSON or TOON, was #{@format.inspect}"
       block and instance_eval(&block)
     end
 

@@ -33,6 +33,21 @@ describe ContextSpook::Generator do
       described_class.send(:new).output_context_size
     end
 
+    context 'can handle formats' do
+      it 'raises exceptions for invalid formats' do
+        generator = described_class.send(:new, format: 'TOON')
+        expect(generator.format).to eq 'TOON'
+      end
+
+      it 'raises exceptions for invalid formats' do
+        expect {
+          described_class.send(:new, format: 'YAML')
+        }.to raise_error(
+          ArgumentError, /format needs to be either JSON or TOON, was "YAML"/
+        )
+      end
+    end
+
     it 'cannot do from block and filename' do
       expect {
         ContextSpook.generate_context('.contexts/project.rb') { }
