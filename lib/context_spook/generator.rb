@@ -72,6 +72,13 @@ module ContextSpook
 
     private_class_method :new
 
+    # The token_estimator attribute allows setting the logic used to estimate
+    # the number of tokens in a serialized context.
+    #
+    # It expects an object that responds to #call(text), where text is the
+    # serialized context string.
+    attr_writer :token_estimator
+
     # The initialize method sets up the object by evaluating the provided block
     # in the object's context.
     #
@@ -85,6 +92,7 @@ module ContextSpook
       %w[ TOON JSON ].include?(@format) or
         raise ArgumentError,
           "format needs to be either JSON or TOON, was #{@format.inspect}"
+      self.token_estimator = ContextSpook::Utils.method(:estimate_tokens)
       block and instance_eval(&block)
     end
 

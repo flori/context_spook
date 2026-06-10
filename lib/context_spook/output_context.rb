@@ -5,16 +5,21 @@
 # functionality for generated context objects.
 module ContextSpook::OutputContext
   # The output_context_size method prints the total size of the generated
-  # context JSON representation.
+  # context representation and an estimated token count.
   #
   # This method calculates the size of the context object when serialized to
-  # JSON, formats it using binary units (KiB, MiB, etc.), and outputs the
-  # result to standard error.
+  # JSON (or TOON), formats it using binary units, estimates the token count
+  # based on bytes, and outputs the result to standard error.
   def output_context_size
-    context_size =
-      (@format == 'TOON' ? @context&.toon_size : @context&.size).to_i
-    context_size = ContextSpook::Utils.format_size(context_size)
-    verbose_puts "Built #{context_size} of #@format context in total."
+    context          = ''
+    if @context
+      context        = @format == 'TOON' ? @context.to_toon : @context.to_json
+    end
+    formatted_size   = ContextSpook::Utils.format_size(context.size)
+    tokens           = @token_estimator.call(context)
+    formatted_tokens = ContextSpook::Utils.format_tokens(tokens)
+
+    verbose_puts "Built #{formatted_size} (#{formatted_tokens} tokens) of #@format context in total."
   end
 
   # The output_context method writes the generated context to the specified

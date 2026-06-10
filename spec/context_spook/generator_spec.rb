@@ -9,7 +9,10 @@ describe ContextSpook::Generator do
     it 'context can be generated from block' do
       expect_any_instance_of(described_class).to\
         receive(:output_context_size).and_call_original
+      expect_any_instance_of(described_class).to receive(:verbose_puts).
+        with(/Built.*?31.0 T tokens.*?of JSON context in total/)
       my_context = ContextSpook.generate_context do
+        self.token_estimator = -> text { (text.size.to_f / Math::PI).ceil }
         context do
           variable foo: 'bar'
           metadata version: '1.0'
@@ -89,7 +92,7 @@ describe ContextSpook::Generator do
       expect_any_instance_of(described_class).to receive(:output_context_size).
         and_call_original
       expect_any_instance_of(described_class).to receive(:verbose_puts).
-        with(/Built.*of JSON context in total/)
+        with(/Built.*?Kb.*?KT.*?of JSON context in total/)
       allow_any_instance_of(described_class::Context).to receive(:verbose_puts)
       my_context
     end
