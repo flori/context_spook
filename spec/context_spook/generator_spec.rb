@@ -92,7 +92,7 @@ describe ContextSpook::Generator do
       expect_any_instance_of(described_class).to receive(:output_context_size).
         and_call_original
       expect_any_instance_of(described_class).to receive(:verbose_puts).
-        with(/Built.*?Kb.*?KT.*?of JSON context in total/)
+        with(/Built.*?KiB.*?KT.*?of JSON context in total/)
       allow_any_instance_of(described_class::Context).to receive(:verbose_puts)
       my_context
     end

@@ -6,15 +6,15 @@ module ContextSpook::Utils
   # The format_size method converts a byte size value into a human-readable
   # string with binary units.
   #
-  # This method takes a raw byte count and formats it using the Tins::Unit
-  # library to display the size with appropriate binary prefixes (KiB, MiB,
+  # library to display the size with appropriate IEC prefixes (KiB, MiB,
+  # etc.) and one decimal place.
   # etc.) and two decimal places.
   #
   # @param context_size [ Integer ] the size in bytes to be formatted
   #
   # @return [ String ] the formatted size string with binary units
   def format_size(context_size)
-    Tins::Unit.format(context_size, format: '%.2f %U', unit: ?b, prefix: 1024)
+    Tins::Unit.format(context_size, format: '%.1f %U', unit: ?B, prefix: :iec_uc)
   end
 
   # The format_tokens method converts a token count into a human-readable
@@ -28,14 +28,20 @@ module ContextSpook::Utils
   end
 
   # The estimate_tokens method provides a crude estimation of token counts
-  # based on the byte size of the input content.
+  # from either a raw byte count or a string.
   #
-  # This follows a heuristic where one token is roughly equivalent to 3.5 bytes.
+  # This follows a heuristic where one token is roughly equivalent to 3.5
+  # bytes. A numeric argument is treated as a byte count directly; any other
+  # value is converted to a string and measured by its byte size.
   #
-  # @param text [ String ] the content to be estimated
+  # @param text_or_bytesize [ String, Integer ] the content to estimate
+  #   tokens for, either as a string or a precomputed byte count
   #
   # @return [ Integer ] the estimated number of tokens
-  def estimate_tokens(text)
-    (text.bytesize.to_f / 3.5).ceil
+  def estimate_tokens(text_or_bytesize)
+    unless text_or_bytesize.is_a?(Numeric)
+      text_or_bytesize = text_or_bytesize.to_s.bytesize
+    end
+    (text_or_bytesize.to_f / 3.5).ceil
   end
 end

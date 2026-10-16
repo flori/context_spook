@@ -119,6 +119,7 @@ module ContextSpook
       include Tins::DSLAccessor
       include Term::ANSIColor
       include ContextSpook::TOON
+      include ContextSpook::Utils
 
       # The initialize method sets up the object by evaluating the provided block
       # in the object's context.
@@ -207,9 +208,7 @@ module ContextSpook
       #
       # @return [ Object, nil ] the parsed JSON data structure or nil if the file cannot be read
       def json(filename)
-        file_size = Tins::Unit.format(
-          File.size(filename), format: '%.2f %U', unit: ?b, prefix: 1024
-        )
+        file_size = format_size(File.size(filename))
         verbose_puts "Read #{filename.inspect} as JSON (%s) for context." % file_size
         JSON.load_file(filename)
       rescue Errno::ENOENT, JSON::ParserError => e
@@ -231,9 +230,7 @@ module ContextSpook
       # @return [ Object, nil ] the parsed YAML data structure or nil if the
       #   file cannot be read
       def yaml(filename)
-        file_size = Tins::Unit.format(
-          File.size(filename), format: '%.2f %U', unit: ?b, prefix: 1024
-        )
+        file_size = format_size(File.size(filename))
         verbose_puts "Read #{filename.inspect} as YAML (%s) for context." % file_size
         YAML.load_file(filename)
       rescue Errno::ENOENT, Psych::SyntaxError => e
@@ -260,22 +257,23 @@ module ContextSpook
       # @return [ Hash ] the created file entry with content, namespace, and tags
       def file(filename, tags: nil)
         content        = File.read(filename)
+        size           = content.bytesize
         content_lines  = content.lines
         numbered_lines = content_lines.each_with_index.map {
           { linenumber: _2 + 1, line: _1.chomp }
         }
+        tokens = estimate_tokens(size)
         files[filename] = {
           namespace:     scope_top,
           content:       numbered_lines,
-          size:          content.bytesize,
+          size:          ,
+          tokens:        ,
           lines:         content_lines.size,
           content_types: MIME::Types.type_for(filename).map(&:content_type).full?,
           tags:          (Array(tags) if tags),
         }.compact
-        file_size = Tins::Unit.format(
-          content.bytesize, format: '%.2f %U', unit: ?b, prefix: 1024
-        )
-        verbose_puts "Read #{filename.inspect} (%s) for context." % file_size
+        verbose_puts "Read #{filename.inspect} (%s, %s) for context." %
+          [ format_size(size), format_tokens(tokens) ]
         nil
       rescue Errno::ENOENT => e
         verbose_puts color(208) { "Reading #{filename.inspect} caused #{e.class}: #{e}" }
@@ -307,17 +305,20 @@ module ContextSpook
             "Executing #{shell_command.inspect} resulted in exit code #{exit_code}."
           }
         end
+        output_size   = output.bytesize
+        output_tokens = estimate_tokens(output_size)
         commands[shell_command] = {
-          namespace: scope_top,
+          namespace:         scope_top,
           output:,
+          size:              output_size,
+          tokens:            output_tokens,
           exit_code:,
           working_directory: Dir.pwd,
-          tags: (Array(tags) if tags),
+          tags:              (Array(tags) if tags),
         }.compact
-        output_size = Tins::Unit.format(
-          output.bytesize, format: '%.2f %U', unit: ?b, prefix: 1024
-        )
-        verbose_puts "Executed #{shell_command.inspect} with output (%s) for context." % output_size
+        verbose_puts "Executed #{shell_command.inspect} with output "\
+          "(%s, %s) for context." %
+          [ format_size(output_size), format_tokens(output_tokens) ]
         nil
       end
 

@@ -3,7 +3,7 @@
 ContextSpook is a Ruby library that collects and organizes project information
 to help AI assistants understand codebases better. It provides a
 domain-specific language (DSL) for describing project context, which can then
-be exported as structured JSON data.
+be exported as structured JSON or TOON (Token-Oriented Object Notation) data.
 
 The DSL is general-purpose and can be used for any kind of project or
 collection of files, whether software development, documentation, research
@@ -136,6 +136,16 @@ Or pipe directly to another tool:
 context_spook .contexts/project.rb | ollama_chat_send
 ```
 
+You can choose the output format with the `-F` flag (JSON is the default):
+
+```bash
+# Generate context as TOON
+context_spook .contexts/project.rb -F TOON > context.toon
+
+# Save TOON directly to a file
+context_spook .contexts/project.rb -F TOON -o context.toon
+```
+
 The CLI tool also supports verbose output:
 
 ```bash
@@ -192,8 +202,8 @@ context_spook -h
 The DSL collects various types of project information:
 
 - **Variables**: Key-value pairs (e.g., git branch)
-- **Files**: Content, size, line count, and tags for each file
-- **Commands**: Shell command outputs with exit codes and working directory
+- **Files**: Line-numbered content, byte size, token estimate, MIME types, line count, and tags
+- **Commands**: Shell command outputs with size, token estimate, exit codes, working directory, and tags
 - **Metadata**: Project-wide attributes (e.g., Ruby version, coverage data)
 
 ## Intended Use Case
@@ -215,9 +225,20 @@ assistants understand:
   "files": {
     "lib/context_spook.rb": {
       "namespace": "lib",
-      "content": "...",
-      "size": 1234,
-      "lines": 56,
+      "content": [
+        { "linenumber": 1, "line": "module ContextSpook" },
+        { "linenumber": 2, "line": "" },
+        { "linenumber": 3, "line": "require 'context_spook/version'" },
+        { "linenumber": 4, "line": "require 'context_spook/utils'" },
+        { "linenumber": 5, "line": "require 'context_spook/generator'" }
+      ],
+      "size": 120,
+      "tokens": 35,
+      "lines": 5,
+      "content_types": [
+        "application/x-ruby",
+        "text/x-ruby"
+      ],
       "tags": [
         "lib"
       ]
@@ -227,18 +248,56 @@ assistants understand:
     "tree": {
       "namespace": "structure",
       "output": "lib\n├── context_spook\n│   └── generator.rb\n└── context_spook.rb\n\n2 directories, 3 files",
+      "size": 88,
+      "tokens": 26,
       "exit_code": 0,
-      "working_directory": "/path/to/project"
+      "working_directory": "/path/to/project",
+      "tags": [
+        "project_structure"
+      ]
     }
   },
   "metadata": {
-    "ruby": "ruby 3.1.0 ...",
-    "code_coverage": {}
+    "ruby": "ruby 4.0.7 (2026-09-15 ...) +PRISM [x86_64-linux]",
+    "code_coverage": null
   },
   "variables": {
-    "branch": "main"
+    "branch": "master"
   }
 }
+```
+
+The same context in TOON v4 format:
+
+```
+files:
+  "lib/context_spook.rb":
+    namespace: lib
+    content[5]{linenumber,line}:
+      1,module ContextSpook
+      2,""
+      3,require 'context_spook/version'
+      4,require 'context_spook/utils'
+      5,require 'context_spook/generator'
+    size: 120
+    tokens: 35
+    lines: 5
+    content_types[2]: application/x-ruby,text/x-ruby
+    tags[1]: lib
+commands:
+  tree:
+    namespace: structure
+    output: "lib\n├── context_spook\n│   └── generator.rb\n└── context_spook.rb\n\n2 directories, 3 files"
+    size: 88
+    tokens: 26
+    exit_code: 0
+    working_directory: /path/to/project
+    tags[1]: project_structure
+metadata:
+  ruby: "ruby 4.0.7 (2026-09-15 ...) +PRISM [x86_64-linux]"
+  code_coverage: null
+variables:
+  branch: master
 ```
 
 ## License
