@@ -30,7 +30,9 @@ end
 #   # => "foo: bar"
 class ContextSpook::TOON::Encoder
   JSON_NUMBER = /\A-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?\z/.freeze
+  private_constant :JSON_NUMBER
   SAFE_KEY    = /\A[a-zA-Z_][a-zA-Z0-9_.]*\z/.freeze
+  private_constant :SAFE_KEY
 
   attr_reader :indent_size, :delimiter
 
