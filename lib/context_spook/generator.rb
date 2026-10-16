@@ -136,8 +136,6 @@ module ContextSpook
       # The initialize method sets up the object by evaluating the provided block
       # in the object's context.
       #
-      # @param verbose [ TrueClass, FalseClass ] flag to enable verbose output
-      #   during processing, defaults to false.
       # @param block [ Proc ] a block of code to be evaluated within the object's context
       #                       If no block is given, the method does nothing.
       def initialize(generator:, &block)
