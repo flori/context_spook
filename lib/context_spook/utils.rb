@@ -36,6 +36,6 @@ module ContextSpook::Utils
   #
   # @return [ Integer ] the estimated number of tokens
   def estimate_tokens(text)
-    (text.size.to_f / 3.5).ceil
+    (text.bytesize.to_f / 3.5).ceil
   end
 end

@@ -15,7 +15,7 @@ module ContextSpook::OutputContext
     if @context
       context        = @format == 'TOON' ? @context.to_toon : @context.to_json
     end
-    formatted_size   = ContextSpook::Utils.format_size(context.size)
+    formatted_size   = ContextSpook::Utils.format_size(context.bytesize)
     tokens           = @token_estimator.call(context)
     formatted_tokens = ContextSpook::Utils.format_tokens(tokens)
 
@@ -33,7 +33,7 @@ module ContextSpook::OutputContext
   #   defaults to STDOUT
   def output_context(output: STDOUT)
     if @format == 'TOON'
-      output.puts(@context.to_toon)
+      @context.to_toon_stream(output)
     else
       JSON.dump(@context.as_json, output)
     end

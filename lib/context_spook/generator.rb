@@ -259,17 +259,21 @@ module ContextSpook
       #
       # @return [ Hash ] the created file entry with content, namespace, and tags
       def file(filename, tags: nil)
-        content = File.read(filename)
+        content        = File.read(filename)
+        content_lines  = content.lines
+        numbered_lines = content_lines.each_with_index.map {
+          { linenumber: _2 + 1, line: _1.chomp }
+        }
         files[filename] = {
-          namespace: scope_top,
-          content:,
-          size: content.size,
-          lines: content.lines.size,
+          namespace:     scope_top,
+          content:       numbered_lines,
+          size:          content.bytesize,
+          lines:         content_lines.size,
           content_types: MIME::Types.type_for(filename).map(&:content_type).full?,
-          tags: (Array(tags) if tags),
+          tags:          (Array(tags) if tags),
         }.compact
         file_size = Tins::Unit.format(
-          content.size, format: '%.2f %U', unit: ?b, prefix: 1024
+          content.bytesize, format: '%.2f %U', unit: ?b, prefix: 1024
         )
         verbose_puts "Read #{filename.inspect} (%s) for context." % file_size
         nil
@@ -311,7 +315,7 @@ module ContextSpook
           tags: (Array(tags) if tags),
         }.compact
         output_size = Tins::Unit.format(
-          output.size, format: '%.2f %U', unit: ?b, prefix: 1024
+          output.bytesize, format: '%.2f %U', unit: ?b, prefix: 1024
         )
         verbose_puts "Executed #{shell_command.inspect} with output (%s) for context." % output_size
         nil
@@ -351,7 +355,7 @@ module ContextSpook
       # @return [ Integer ] the size in bytes of the JSON representation of the
       # context
       def size
-        to_json.size
+        to_json.bytesize
       end
     end
 

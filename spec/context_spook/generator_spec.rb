@@ -12,7 +12,7 @@ describe ContextSpook::Generator do
       expect_any_instance_of(described_class).to receive(:verbose_puts).
         with(/Built.*?31.0 T tokens.*?of JSON context in total/)
       my_context = ContextSpook.generate_context do
-        self.token_estimator = -> text { (text.size.to_f / Math::PI).ceil }
+        self.token_estimator = -> text { (text.bytesize.to_f / Math::PI).ceil }
         context do
           variable foo: 'bar'
           metadata version: '1.0'

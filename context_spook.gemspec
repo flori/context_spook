@@ -12,15 +12,15 @@ Gem::Specification.new do |s|
   s.description = "context_spook is a library that collects and organizes project\ninformation to help AI assistants understand codebases better.\n".freeze
   s.email = "flori@ping.de".freeze
   s.executables = ["context_spook".freeze]
-  s.extra_rdoc_files = ["README.md".freeze, "lib/context_spook.rb".freeze, "lib/context_spook/generator.rb".freeze, "lib/context_spook/output_context.rb".freeze, "lib/context_spook/toon.rb".freeze, "lib/context_spook/utils.rb".freeze, "lib/context_spook/verbose_puts.rb".freeze, "lib/context_spook/version.rb".freeze]
-  s.files = [".contexts/project.rb".freeze, "Gemfile".freeze, "LICENSE".freeze, "README.md".freeze, "Rakefile".freeze, "bin/context_spook".freeze, "context_spook.gemspec".freeze, "hello_world.json".freeze, "hey_world.yaml".freeze, "lib/context_spook.rb".freeze, "lib/context_spook/generator.rb".freeze, "lib/context_spook/output_context.rb".freeze, "lib/context_spook/toon.rb".freeze, "lib/context_spook/toon/example.md".freeze, "lib/context_spook/utils.rb".freeze, "lib/context_spook/verbose_puts.rb".freeze, "lib/context_spook/version.rb".freeze, "spec/context_spook/generator_spec.rb".freeze, "spec/context_spook/toon_spec.rb".freeze, "spec/spec_helper.rb".freeze]
+  s.extra_rdoc_files = ["README.md".freeze, "lib/context_spook.rb".freeze, "lib/context_spook/generator.rb".freeze, "lib/context_spook/output_context.rb".freeze, "lib/context_spook/toon.rb".freeze, "lib/context_spook/toon/encoder.rb".freeze, "lib/context_spook/utils.rb".freeze, "lib/context_spook/verbose_puts.rb".freeze, "lib/context_spook/version.rb".freeze]
+  s.files = [".contexts/project.rb".freeze, "Gemfile".freeze, "LICENSE".freeze, "README.md".freeze, "Rakefile".freeze, "bin/context_spook".freeze, "context_spook.gemspec".freeze, "hello_world.json".freeze, "hey_world.yaml".freeze, "lib/context_spook.rb".freeze, "lib/context_spook/generator.rb".freeze, "lib/context_spook/output_context.rb".freeze, "lib/context_spook/toon.rb".freeze, "lib/context_spook/toon/encoder.rb".freeze, "lib/context_spook/toon/example.md".freeze, "lib/context_spook/utils.rb".freeze, "lib/context_spook/verbose_puts.rb".freeze, "lib/context_spook/version.rb".freeze, "spec/context_spook/generator_spec.rb".freeze, "spec/context_spook/toon_encoder_spec.rb".freeze, "spec/context_spook/toon_spec.rb".freeze, "spec/examples/README.md".freeze, "spec/examples/conversions/keyed-tabular-objects.json".freeze, "spec/examples/conversions/keyed-tabular-objects.toon".freeze, "spec/examples/conversions/nested-field-groups.json".freeze, "spec/examples/conversions/nested-field-groups.toon".freeze, "spec/examples/conversions/tabular-arrays.json".freeze, "spec/examples/conversions/tabular-arrays.toon".freeze, "spec/examples/invalid/delimiter-mismatch.toon".freeze, "spec/examples/invalid/length-mismatch.toon".freeze, "spec/examples/invalid/multiple-root-primitives.toon".freeze, "spec/examples/valid/comments.toon".freeze, "spec/examples/valid/delimiter-scoping.toon".freeze, "spec/examples/valid/mixed-arrays.toon".freeze, "spec/examples/valid/nested-objects.toon".freeze, "spec/examples/valid/objects.toon".freeze, "spec/examples/valid/pipe-delimiter.toon".freeze, "spec/examples/valid/primitive-arrays.toon".freeze, "spec/examples/valid/tab-delimiter.toon".freeze, "spec/fixtures/encode/arrays-nested.json".freeze, "spec/fixtures/encode/arrays-objects.json".freeze, "spec/fixtures/encode/arrays-primitive.json".freeze, "spec/fixtures/encode/arrays-tabular.json".freeze, "spec/fixtures/encode/delimiters.json".freeze, "spec/fixtures/encode/objects-keyed.json".freeze, "spec/fixtures/encode/objects.json".freeze, "spec/fixtures/encode/primitives.json".freeze, "spec/fixtures/encode/whitespace.json".freeze, "spec/spec_helper.rb".freeze]
   s.homepage = "https://github.com/flori/context_spook".freeze
   s.licenses = ["MIT".freeze]
   s.rdoc_options = ["--title".freeze, "ContextSpook - context_spook collects project context for AI".freeze, "--main".freeze, "README.md".freeze]
   s.required_ruby_version = Gem::Requirement.new(">= 3.1".freeze)
   s.rubygems_version = "4.0.22".freeze
   s.summary = "context_spook collects project context for AI".freeze
-  s.test_files = ["spec/context_spook/generator_spec.rb".freeze, "spec/context_spook/toon_spec.rb".freeze, "spec/spec_helper.rb".freeze]
+  s.test_files = ["spec/context_spook/generator_spec.rb".freeze, "spec/context_spook/toon_encoder_spec.rb".freeze, "spec/context_spook/toon_spec.rb".freeze, "spec/spec_helper.rb".freeze]
 
   s.specification_version = 4
 
@@ -36,5 +36,4 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency(%q<mime-types>.freeze, ["~> 3.0".freeze])
   s.add_runtime_dependency(%q<yaml>.freeze, ["~> 0.4".freeze])
   s.add_runtime_dependency(%q<pathname>.freeze, ["~> 0.4".freeze])
-  s.add_runtime_dependency(%q<toon-ruby>.freeze, [">= 0.1".freeze])
 end

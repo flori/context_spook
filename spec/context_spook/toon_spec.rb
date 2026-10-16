@@ -20,22 +20,21 @@ describe ContextSpook::TOON do
 
     it 'produces valid TOON output' do
       toon_output = my_context.to_toon
-      expect(toon_output).to match(
-        %r{
-          \Afiles:\n
-          ^[ ]{2}"lib/context_spook\.rb":\n
-          ^[ ]{4}content:[ ]"[^"]+"\n
-          ^[ ]{4}size:[ ]120\n
-          ^[ ]{4}lines:[ ]5\n
-          ^[ ]{4}content_types\[2\]:[ ]application/x-ruby,text/x-ruby\n
-          ^commands:\n
-          ^metadata:\n
-          ^[ ]{2}version:[ ]"1\.0"\n
-          ^[ ]{2}format:[ ]JSON\n
-          ^variables:\n
-          ^[ ]{2}foo:[ ]bar\z
-        }x
+      expect(toon_output).to start_with(
+        "files:\n" \
+         "  \"lib/context_spook.rb\":\n" \
+        "    content[5]{linenumber,line}:\n" \
+        "      1,module ContextSpook\n"
       )
+      expect(toon_output).to include("    size: 120\n")
+      expect(toon_output).to include("    lines: 5\n")
+      expect(toon_output)
+        .to include("    content_types[2]: application/x-ruby,text/x-ruby\n")
+      expect(toon_output).to include("commands:\n")
+      expect(toon_output).to include("  version: \"1.0\"\n")
+      expect(toon_output).to include("  format: JSON\n")
+      expect(toon_output).to include("variables:\n")
+      expect(toon_output).to end_with("  foo: bar")
     end
   end
 
@@ -49,7 +48,7 @@ describe ContextSpook::TOON do
     it 'matches the size of the TOON output' do
       size = my_context.toon_size
       toon_output = my_context.to_toon
-      expect(size).to eq(toon_output.size)
+      expect(size).to eq(toon_output.bytesize)
     end
   end
 
