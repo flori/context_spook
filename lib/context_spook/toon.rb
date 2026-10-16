@@ -28,17 +28,4 @@ module ContextSpook::TOON
   def to_toon_stream(output)
     Encoder.encode(as_json, output: output)
   end
-
-  # The toon_example method reads and returns the content of an example
-  # Markdown file that demonstrates the TOON (Token-Oriented Object Notation)
-  # format.
-  #
-  # This method is used to provide a sample representation of how context data
-  # can be formatted in TOON, which is an alternative serialization format
-  # supported by the ContextSpook library.
-  #
-  # @return [ String ] the content of the TOON example Markdown file
-  def toon_example
-    File.read(Pathname.new(__dir__) + 'toon/example.md')
-  end
 end

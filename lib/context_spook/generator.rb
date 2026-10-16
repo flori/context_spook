@@ -132,9 +132,6 @@ module ContextSpook
         @generator = generator
         block and instance_eval(&block)
         meta(format: generator.format)
-        if generator.format == 'TOON'
-          meta(toon_example: toon_example)
-        end
       end
 
       # The generator method returns the generator object associated with this
