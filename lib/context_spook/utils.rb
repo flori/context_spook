@@ -8,7 +8,6 @@ module ContextSpook::Utils
   #
   # library to display the size with appropriate IEC prefixes (KiB, MiB,
   # etc.) and one decimal place.
-  # etc.) and two decimal places.
   #
   # @param context_size [ Integer ] the size in bytes to be formatted
   #

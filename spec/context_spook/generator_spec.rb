@@ -98,6 +98,67 @@ describe ContextSpook::Generator do
     end
   end
 
+  describe 'manifest mode' do
+    let :manifest_context do
+      ContextSpook.generate_context(manifest: true, verbose: false) do
+        context do
+          file 'lib/context_spook.rb'
+        end
+      end
+    end
+
+    let :full_context do
+      ContextSpook.generate_context(manifest: false, verbose: false) do
+        context do
+          file 'lib/context_spook.rb'
+        end
+      end
+    end
+
+    it 'defaults to manifest: false' do
+      gen = described_class.send(:new)
+      expect(gen.manifest).to eq false
+    end
+
+    it 'stores manifest: true on Generator' do
+      gen = described_class.send(:new, manifest: true)
+      expect(gen.manifest).to eq true
+    end
+
+    it 'stamps manifest: true in metadata' do
+      expect(manifest_context.metadata[:manifest]).to eq true
+    end
+
+    it 'omits manifest key from metadata when false' do
+      expect(full_context.metadata).not_to have_key(:manifest)
+    end
+
+    it 'includes content and lines in non-manifest mode' do
+      file = full_context.files['lib/context_spook.rb']
+      expect(file[:content]).to be_a(Array)
+      expect(file[:content].first).to include(:linenumber, :line)
+      expect(file[:lines]).to be > 0
+    end
+
+    it 'omits content and lines in manifest mode' do
+      file = manifest_context.files['lib/context_spook.rb']
+      expect(file).not_to have_key(:content)
+      expect(file).not_to have_key(:lines)
+    end
+
+    it 'retains metadata fields in manifest mode' do
+      file = manifest_context.files['lib/context_spook.rb']
+      expect(file[:size]).to be > 0
+      expect(file[:tokens]).to be > 0
+      expect(file[:content_types]).to be_present
+    end
+
+    it 'produces smaller output in manifest mode' do
+      expect(manifest_context.to_json.bytesize).
+        to be < full_context.to_json.bytesize
+    end
+  end
+
   describe 'Context' do
     it 'can have variables' do
       expect(my_context.variables[:branch]).to be_present

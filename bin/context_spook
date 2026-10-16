@@ -27,6 +27,7 @@ def usage
     -i PATTERN   Include files matching PATTERN (can be used multiple times)
                  Supports glob patterns like **, *, ?, [abc], {a,b,c}
     -F FORMAT    Output context as format JSON (the default) or TOON
+    -m           Manifest mode: omit file content, carry only metadata
     -h           Show this help message
 
   Examples:
@@ -49,19 +50,21 @@ def usage
     # Generate informational output only to estimate context size
     #{File.basename($0)} .contexts/project.rb -S
 
+    # Generate context in manifest mode (metadata only, no file content)
+    #{File.basename($0)} .contexts/project.rb -m
     # Generate context and save to file
     #{File.basename($0)} .contexts/project.rb -o context.json
   EOT
   exit 0
 end
 
-opts    = go 'o:i:F:pvSh', defaults: { ?v => true }
+opts    = go 'o:i:F:mvSh', defaults: { ?v => true }
 opts[?h] and usage
 context = nil
 output  = nil
 
 if opts[?i]
-  context = ContextSpook.generate_context(verbose: opts[?v], format: opts[?F]) do
+  context = ContextSpook.generate_context(verbose: opts[?v], format: opts[?F], manifest: opts[?m]) do
     context do
       opts[?i].to_a.each do |glob|
         glob = File.expand_path(glob)
@@ -74,7 +77,7 @@ if opts[?i]
   end
 else
   filename = ARGV.shift or fail 'require context definition file as an argument'
-  context = ContextSpook.generate_context(filename, verbose: opts[?v], format: opts[?F])
+  context = ContextSpook.generate_context(filename, verbose: opts[?v], format: opts[?F], manifest: opts[?m])
 end
 
 output = STDOUT

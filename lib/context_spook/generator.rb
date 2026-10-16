@@ -28,6 +28,8 @@ module ContextSpook
   #   during processing
   # @param format [ String, nil ] the output format for the context, either
   #   'JSON' or 'TOON'
+  # @param manifest [ TrueClass, FalseClass ] if true, file entries
+  #   omit their content and only carry metadata
   # @param block [ Proc ] a block containing the context definition, used if
   #   filename is nil
   #
@@ -37,15 +39,18 @@ module ContextSpook
   # @raise [ ArgumentError ] if neither a filename nor a block is provided
   # @raise [ ArgumentError ] if an invalid format is specified
   # @raise [ ArgumentError ] if the context definition file cannot be read or parsed
-  def self.generate_context(filename = nil, verbose: false, format: nil, &block)
+  def self.generate_context(filename = nil, verbose: false, format: nil,
+                            manifest: false, &block)
     verbose = !!verbose
     filename.present? ^ block or
       raise ArgumentError, 'need either a filename or a &block argument'
-    generator = if filename
-                  Generator.send(:new, verbose:, format:).send(:parse, File.read(filename))
-                else
-                  Generator.send(:new, verbose:, format:, &block)
-                end
+    generator =
+      if filename
+        source = File.read(filename)
+        Generator.send(:new, verbose:, format:, manifest:).send(:parse, source)
+      else
+        Generator.send(:new, verbose:, format:, manifest:, &block)
+      end
     generator.output_context_size
     generator.context
   end
@@ -70,6 +75,12 @@ module ContextSpook
     # @return [ String ] the format identifier, either 'JSON' or 'TOON'
     attr_reader :format
 
+    # The manifest method returns whether the generator is in manifest mode,
+    # where file entries omit their content.
+    #
+    # @return [ TrueClass, FalseClass ] true if in manifest mode
+    attr_reader :manifest
+
     private_class_method :new
 
     # The token_estimator attribute allows setting the logic used to estimate
@@ -86,9 +97,10 @@ module ContextSpook
     #   output during processing, defaults to lfalse.
     # @param block [ Proc ] a block of code to be evaluated within the object's context
     #                       If no block is given, the method does nothing.
-    def initialize(verbose: false, format: nil, &block)
-      @verbose = !!verbose
-      @format  = (format || 'JSON').upcase
+    def initialize(verbose: false, format: nil, manifest: false, &block)
+      @verbose  = !!verbose
+      @format   = (format || 'JSON').upcase
+      @manifest = !!manifest
       %w[ TOON JSON ].include?(@format) or
         raise ArgumentError,
           "format needs to be either JSON or TOON, was #{@format.inspect}"
@@ -132,6 +144,7 @@ module ContextSpook
         @generator = generator
         block and instance_eval(&block)
         meta(format: generator.format)
+        meta(manifest: true) if generator.manifest
       end
 
       # The generator method returns the generator object associated with this
@@ -142,6 +155,8 @@ module ContextSpook
       attr_reader :generator
 
       delegate :verbose, to: :generator
+
+      delegate :manifest, to: :generator
 
       # The namespace method creates a scoped block with a given name.
       #
@@ -203,7 +218,8 @@ module ContextSpook
       #
       # @param filename [ String ] the path to the JSON file to be read and parsed
       #
-      # @return [ Object, nil ] the parsed JSON data structure or nil if the file cannot be read
+      # @return [ Object, nil ] the parsed JSON data structure or nil if the
+      #   file cannot be read
       def json(filename)
         file_size = format_size(File.size(filename))
         verbose_puts "Read #{filename.inspect} as JSON (%s) for context." % file_size
@@ -246,29 +262,42 @@ module ContextSpook
       # content.
       #
       # It reads the specified file and creates an entry in the files hash with
-      # the file's content, along with its namespace and optional tags.
+      # the file's content, along with its namespace and optional tags. In
+      # manifest mode, only metadata fields are stored.
       #
       # @param filename [ String ] the path to the file to be read and stored
       # @param tags [ Array<String>, nil ] optional array of tags to associate with the file
       #
       # @return [ Hash ] the created file entry with content, namespace, and tags
       def file(filename, tags: nil)
-        content        = File.read(filename)
-        size           = content.bytesize
-        content_lines  = content.lines
-        numbered_lines = content_lines.each_with_index.map {
-          { linenumber: _2 + 1, line: _1.chomp }
-        }
+        size   = File.size(filename)
         tokens = estimate_tokens(size)
-        files[filename] = {
-          namespace:     scope_top,
-          content:       numbered_lines,
-          size:          ,
-          tokens:        ,
-          lines:         content_lines.size,
-          content_types: MIME::Types.type_for(filename).map(&:content_type).full?,
-          tags:          (Array(tags) if tags),
-        }.compact
+        if manifest
+          files[filename] = {
+            namespace:     scope_top,
+            size:          ,
+            tokens:        ,
+            content_types: MIME::Types.type_for(filename)
+                             .map(&:content_type).full?,
+            tags:          (Array(tags) if tags),
+          }.compact
+        else
+          content        = File.read(filename)
+          content_lines  = content.lines
+          numbered_lines = content_lines.each_with_index.map {
+            { linenumber: _2 + 1, line: _1.chomp }
+          }
+          files[filename] = {
+            namespace:     scope_top,
+            content:       numbered_lines,
+            size:          ,
+            tokens:        ,
+            lines:         content_lines.size,
+            content_types: MIME::Types.type_for(filename)
+                             .map(&:content_type).full?,
+            tags:          (Array(tags) if tags),
+          }.compact
+        end
         verbose_puts "Read #{filename.inspect} (%s, %s) for context." %
           [ format_size(size), format_tokens(tokens) ]
         nil
@@ -276,7 +305,8 @@ module ContextSpook
         verbose_puts color(208) { "Reading #{filename.inspect} caused #{e.class}: #{e}" }
       end
 
-      # The commands method sets up a DSL accessor for provided command outputs.
+      # The commands method sets up a DSL accessor for provided command
+      # outputs.
       #
       # @param value [ Hash ] the hash of commands to be set
       dsl_accessor :commands do
@@ -285,8 +315,8 @@ module ContextSpook
 
       # The command method executes a shell command and stores its result.
       #
-      # This method runs a given shell command and records the output, exit code,
-      # working directory, and optional tags in the commands hash.
+      # This method runs a given shell command and records the output, exit
+      # code, working directory, and optional tags in the commands hash.
       #
       # @param shell_command [ String ] the shell command to execute
       # @param tags [ Array<String>, nil ] optional array of tags to associate

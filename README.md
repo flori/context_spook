@@ -5,6 +5,9 @@ to help AI assistants understand codebases better. It provides a
 domain-specific language (DSL) for describing project context, which can then
 be exported as structured JSON or TOON (Token-Oriented Object Notation) data.
 
+TOON output is produced by a native encoder conformant to the TOON v4.4
+specification, validated against 186 official conformance fixtures.
+
 The DSL is general-purpose and can be used for any kind of project or
 collection of files, whether software development, documentation, research
 data, educational materials, creative projects, or any other type of organized
@@ -14,7 +17,8 @@ domains.
 
 ## Documentation
 
-Complete API documentation is available at: [GitHub.io](https://flori.github.io/context_spook/)
+Complete API documentation is available at:
+[GitHub.io](https://flori.github.io/context_spook/)
 
 ## Installation
 
@@ -25,11 +29,13 @@ gem 'context_spook'
 ```
 
 And then execute:
+
 ```bash
 $ bundle install
 ```
 
 Or install it yourself as:
+
 ```bash
 $ gem install context_spook
 ```
@@ -72,7 +78,18 @@ application.
 ```ruby
 File.write 'context.json', context.to_json
 ```
+You can also generate a manifest-only context by passing `manifest: true`.
+File entries are reduced to their path plus metadata (size, tokens, MIME
+types, tags), giving the model a lightweight index of file paths it can
+use with `read_file` to load only what it needs:
 
+```ruby
+context = ContextSpook::generate_context(manifest: true) do
+  context do
+    file 'lib/context_spook.rb'
+  end
+end
+```
 #### From a context definition file
 
 Alternatively store the block's content above to a file `.contexts/project.rb`:
@@ -145,6 +162,18 @@ context_spook .contexts/project.rb -F TOON > context.toon
 # Save TOON directly to a file
 context_spook .contexts/project.rb -F TOON -o context.toon
 ```
+You can use manifest mode with `-m` to omit file content. Each file entry
+is reduced to its path plus metadata (size, tokens, MIME types, tags),
+giving the model a lightweight index of file paths it can use with
+`read_file` to load only what it needs:
+
+```bash
+# Generate manifest-only context as TOON
+context_spook .contexts/project.rb -F TOON -m > context.toon
+
+# Generate manifest-only context as JSON
+context_spook .contexts/project.rb -m > context.json
+```
 
 The CLI tool also supports verbose output:
 
@@ -188,7 +217,8 @@ To estimate the size of your context without generating the large output file:
 context_spook .contexts/project.rb -S
 ```
 
-This is useful for optimizing context size before committing to large output files.
+This is useful for optimizing context size before committing to large output
+files.
 
 This is how you can show the usage message:
 
@@ -202,8 +232,10 @@ context_spook -h
 The DSL collects various types of project information:
 
 - **Variables**: Key-value pairs (e.g., git branch)
-- **Files**: Line-numbered content, byte size, token estimate, MIME types, line count, and tags
-- **Commands**: Shell command outputs with size, token estimate, exit codes, working directory, and tags
+- **Files**: Line-numbered content, byte size, token estimate, MIME types, line
+  count, and tags (or metadata-only in manifest mode)
+- **Commands**: Shell command outputs with size, token estimate, exit codes,
+  working directory, and tags
 - **Metadata**: Project-wide attributes (e.g., Ruby version, coverage data)
 
 ## Intended Use Case
