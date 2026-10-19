@@ -29,9 +29,9 @@ end
 #   io.string
 #   # => "foo: bar"
 class ContextSpook::TOON::Encoder
-  JSON_NUMBER = /\A-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?\z/.freeze
+  JSON_NUMBER = /\A-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?\z/
   private_constant :JSON_NUMBER
-  SAFE_KEY    = /\A[a-zA-Z_][a-zA-Z0-9_.]*\z/.freeze
+  SAFE_KEY    = /\A[a-zA-Z_][a-zA-Z0-9_.]*\z/
   private_constant :SAFE_KEY
 
   attr_reader :indent_size, :delimiter
@@ -584,7 +584,7 @@ class ContextSpook::TOON::Encoder
     | \A(?:true|false|null)\z # JSON literal (§7.3)
     | \A[+-]?\d               # number-like prefix (§7.3)
     | \A-                     # list item marker (§7.1)
-  /x.freeze
+  /x
   private_constant :UNSAFE_STRING
 
   # Reports whether +str+ can be emitted as an unquoted TOON value.
