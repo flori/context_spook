@@ -1,9 +1,9 @@
 # -*- encoding: utf-8 -*-
-# stub: context_spook 1.7.0 ruby lib
+# stub: context_spook 1.8.0 ruby lib
 
 Gem::Specification.new do |s|
   s.name = "context_spook".freeze
-  s.version = "1.7.0".freeze
+  s.version = "1.8.0".freeze
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0".freeze) if s.respond_to? :required_rubygems_version=
   s.require_paths = ["lib".freeze]
@@ -18,19 +18,19 @@ Gem::Specification.new do |s|
   s.licenses = ["MIT".freeze]
   s.rdoc_options = ["--title".freeze, "ContextSpook - context_spook collects project context for AI".freeze, "--main".freeze, "README.md".freeze]
   s.required_ruby_version = Gem::Requirement.new(">= 3.1".freeze)
-  s.rubygems_version = "4.0.22".freeze
+  s.rubygems_version = "4.0.24".freeze
   s.summary = "context_spook collects project context for AI".freeze
   s.test_files = ["spec/context_spook/generator_spec.rb".freeze, "spec/context_spook/toon_encoder_spec.rb".freeze, "spec/context_spook/toon_spec.rb".freeze, "spec/spec_helper.rb".freeze]
 
   s.specification_version = 4
 
-  s.add_development_dependency(%q<gem_hadar>.freeze, [">= 2.18.0".freeze])
+  s.add_development_dependency(%q<gem_hadar>.freeze, [">= 2.24.1".freeze])
   s.add_development_dependency(%q<all_images>.freeze, ["~> 0.6".freeze])
   s.add_development_dependency(%q<rspec>.freeze, ["~> 3.2".freeze])
   s.add_development_dependency(%q<debug>.freeze, [">= 0".freeze])
   s.add_development_dependency(%q<simplecov>.freeze, [">= 0".freeze])
   s.add_runtime_dependency(%q<tins>.freeze, ["~> 1.46".freeze])
-  s.add_runtime_dependency(%q<json>.freeze, ["~> 2.0".freeze])
+  s.add_runtime_dependency(%q<json>.freeze, [">= 2.0".freeze, "< 4".freeze])
   s.add_runtime_dependency(%q<term-ansicolor>.freeze, ["~> 1.11".freeze])
   s.add_runtime_dependency(%q<mize>.freeze, ["~> 0.6".freeze])
   s.add_runtime_dependency(%q<mime-types>.freeze, ["~> 3.0".freeze])
